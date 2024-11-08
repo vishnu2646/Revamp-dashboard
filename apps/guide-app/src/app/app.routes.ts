@@ -6,7 +6,7 @@ import { AuthComponent } from './auth/auth.component';
 import { LoginComponent } from './auth/login/login.component';
 import { DataviewComponent } from './pages/dataview/dataview.component';
 import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
-import { SignupComponent } from './auth/signup/signup.component';
+import { ChangePasswordComponent } from './auth/change-password/change-password.component';
 
 export const routes: Routes = [
     {
@@ -23,12 +23,12 @@ export const routes: Routes = [
                 component: LoginComponent
             },
             {
-                path: 'signup',
-                component: SignupComponent
-            },
-            {
                 path:'reset-password',
                 component: ResetPasswordComponent
+            },
+            {
+                path:'change-password',
+                component: ChangePasswordComponent
             }
         ]
     },

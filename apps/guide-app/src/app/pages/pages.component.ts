@@ -79,6 +79,7 @@ export class PagesComponent implements OnInit {
     }
 
     public handleLogout() {
+        this.userService.logoutService();
         this.router.navigate(['/auth/login']);
     }
 }

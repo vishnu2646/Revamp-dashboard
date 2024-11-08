@@ -31,7 +31,7 @@
                         <mat-label>password</mat-label>
                         <input matInput type="password" [(ngModel)]="user.UsrPwd" placeholder="Enter Username">
                     </mat-form-field>
-                    <p class="forget-password">Forget Password ?</p>
+                    <p class="forget-password" (click)="handleNaviagteToReset()">Forget Password ?</p>
                     <button mat-raised-button color="primary" class="otp-btn" (click)="handleLogin()">Login</button>
                 </div>
             }

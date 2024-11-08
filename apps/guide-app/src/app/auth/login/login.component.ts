@@ -4,7 +4,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,6 +18,7 @@ import { IUser, IUserInfo } from '../../types/types';
     standalone: true,
     imports: [
         FormsModule,
+        RouterModule,
         MatInputModule,
         MatFormFieldModule,
         MatButtonModule,
@@ -56,8 +57,9 @@ export class LoginComponent {
     }
 
     public ngOnInit() {
-        const data: IUser = this.userService.getCookieData() as IUser;
-        if(data) {
+        const data: IUser | string = this.userService.getCookieData() as IUser | string;
+        console.log(data);
+        if(data !== "No cookie data") {
             this.router.navigate(['/dashboard']);
         }
         const sessionId = uuidv4();
@@ -84,6 +86,10 @@ export class LoginComponent {
             console.log(error);
             this.router.navigate(['/auth/login']);
         }
+    }
+
+    public handleNaviagteToReset() {
+        this.router.navigate(['/auth/reset-password']);
     }
 
     private handleUpdateIpAddress() {

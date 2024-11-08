@@ -156,7 +156,6 @@ export class DataviewComponent implements OnInit, AfterViewInit {
                 this.tempExplorer = responseData['CheckMenuExplr'].Table;
                 this.menuExplorerCount = responseData['CheckMenuExplr'].Table.length;
                 this.optionsRights = responseData['CheckMenuExplr'].Table3[0];
-                console.log(responseData['CheckMenuExplr']);
                 if(this.optionsRights['Rights_Edit'] || this.optionsRights['Right_History'] || this.optionsRights['Rights_Comment']){
                     this.displayedColumns = [...this.objectKeys(this.menuExplorer[0]), 'actions'];
                 }

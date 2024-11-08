@@ -9,7 +9,7 @@ import { IUser, IUserInfo } from '../../types/types';
     providedIn: 'root'
 })
 export class UserserviceService {
-    private htpp = inject(HttpClient);
+    private http = inject(HttpClient);
 
     private baseUrl = 'http://rx2025apiservice.revampapps.com';
 
@@ -26,12 +26,24 @@ export class UserserviceService {
             const data = JSON.parse(cookieData);
             return data;
         } else {
-            console.log('No cookie data');
             return 'No cookie data'
         }
     }
 
+    public logoutService(): void {
+        this.cookieService.delete('user');
+    }
+
     public loginService(data: any): Observable<IUserInfo> {
-        return this.htpp.post(`${this.baseUrl}/LoginApi?databaseKey=TRADEDEMO`, data) as Observable<IUserInfo>;
+        return this.http.post(`${this.baseUrl}/LoginApi?databaseKey=TRADEDEMO`, data) as Observable<IUserInfo>;
+    }
+
+    public getUserInfoService(userName: String, password: String, email: String): Observable<Object> {
+        return this.http.get(`${this.baseUrl}/ResetPwdApi?IN_UserName=${userName}&IN_PassWordStr=${password}&IN_EmailId=${email}&databaseKey=TRADEDEMO`);
+    }
+
+    public updatePasswordInfoService(data: any) {
+        const { username, OldPassword, password } = data;
+        return this.http.get(`${this.baseUrl}/ChangePwdApi?Username=${username}&OldPassWord=${OldPassword}&NewPassWord=${password}&databaseKey=TRADEDEMO`)
     }
 }
