@@ -1,0 +1,32 @@
+<section class="login-wrapper">
+    <!-- Left -->
+    <div class="left">
+        <img class="login-hero" src="../../../assets/login.jpg" alt="logo">
+    </div>
+    <div class="right">
+        <div class="title">
+            <h3>Welcome to</h3>
+            <h2 class="company">Revamp Tech</h2>
+        </div>
+        <div class="form-fields">
+                <h2>Register</h2>
+                <div class="user-forms">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Email</mat-label>
+                        <input matInput type="email" placeholder="Enter Email">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Password</mat-label>
+                        <input matInput type="password" placeholder="Enter Password">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Re Enter Password</mat-label>
+                        <input matInput type="password" placeholder="Enter Confirm Password">
+                    </mat-form-field>
+                    <button mat-raised-button color="primary" class="otp-btn" (click)="handleSignup()">Login</button>
+                </div>
+        </div>
+    </div>
+</section>

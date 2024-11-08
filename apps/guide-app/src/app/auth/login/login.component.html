@@ -1,0 +1,40 @@
+<section class="login-wrapper">
+    <!-- Left -->
+    <div class="left">
+        <img class="login-hero" src="../../../assets/login.jpg" alt="logo">
+    </div>
+    <div class="right">
+        <div class="title">
+            <h3>Welcome to</h3>
+            <h2 class="company">Revamp Tech</h2>
+        </div>
+        <div class="form-fields">
+            @if(toggleOTPfield) {
+                <div class="otp-forms">
+                    <mat-form-field appearance="outline">
+                        <mat-label>OTP</mat-label>
+                        <input matInput type="password" placeholder="Enter Username">
+                    </mat-form-field>
+                    <mat-checkbox color="primary">Remember Me</mat-checkbox>
+                    <br />
+                    <br />
+                    <button mat-raised-button color="primary" class="login-btn" (click)="handleVerifyOtp()">Submit</button>
+                </div>
+            } @else {
+                <div class="user-forms">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Username</mat-label>
+                        <input matInput type="text" [(ngModel)]="user.UsrName" placeholder="Enter Username">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>password</mat-label>
+                        <input matInput type="password" [(ngModel)]="user.UsrPwd" placeholder="Enter Username">
+                    </mat-form-field>
+                    <p class="forget-password">Forget Password ?</p>
+                    <button mat-raised-button color="primary" class="otp-btn" (click)="handleLogin()">Login</button>
+                </div>
+            }
+        </div>
+    </div>
+</section>

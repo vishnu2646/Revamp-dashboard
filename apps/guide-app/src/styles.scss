@@ -1,0 +1,31 @@
+@import '../../../styles/global';
+
+a {
+    text-decoration: none;
+}
+
+mat-form-field {
+    margin-bottom: 20px;
+
+    .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: $light-white;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: $primary;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: $primary;
+}

@@ -1,0 +1,58 @@
+
+<mat-drawer-container class="container">
+    <mat-drawer mode="over" #drawer>
+        <h2>Gas Agency</h2>
+        @if(isMenuLoading) {
+            <app-loader></app-loader>
+        } @else {
+            <mat-accordion>
+                @for (option of groupedKeys; track $index) {
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <span>{{ option }}</span>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div>
+                            <ul>
+                                @for (child of groupData[option.toString()]; track $index) {
+                                    <li (click)="handleNavigate(child)">
+                                        {{ child.MdlDisplayname }}
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </mat-expansion-panel>
+                }
+            </mat-accordion>
+        }
+        <mat-accordion class="links">
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <mat-icon>person</mat-icon>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        <span>Admin</span>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <div>
+                    <ul>
+                        <li (click)="handleLogout()">
+                            <mat-icon>logout</mat-icon>
+                            <span>Logout</span>
+                        </li>
+                    </ul>
+                </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </mat-drawer>
+    <mat-drawer-content>
+        <div class="header">
+            <button type="button" mat-icon-button (click)="drawer.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
+        </div>
+        <router-outlet></router-outlet>
+    </mat-drawer-content>
+</mat-drawer-container>

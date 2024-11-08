@@ -1,0 +1,35 @@
+<header>
+    <span>Create Date Filter</span>
+    <button mat-icon-button color="warn" (click)="handleCloseFilterSheet($event)">
+        <mat-icon>
+            close
+        </mat-icon>
+    </button>
+</header>
+<div class="content">
+    <div class="filter-fields">
+        <mat-form-field appearance="outline">
+            <mat-label>Choose a date</mat-label>
+            <input matInput [matDatepicker]="fromDatePicker" [(ngModel)]="fromDate">
+            <mat-datepicker-toggle matIconSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Choose a date</mat-label>
+            <input matInput [matDatepicker]="toDatePicker" [(ngModel)]="toDate">
+            <mat-datepicker-toggle matIconSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #toDatePicker></mat-datepicker>
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field appearance="outline">
+            <mat-label>Enter date column</mat-label>
+            <input matInput type="text" [(ngModel)]="field">
+        </mat-form-field>
+    </div>
+    <button mat-raised-button color="accent" (click)="handleDateFilter()">
+        <mat-icon>search</mat-icon>
+        Apply Filter
+    </button>
+</div>

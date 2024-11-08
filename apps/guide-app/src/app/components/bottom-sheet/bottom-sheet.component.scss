@@ -1,0 +1,34 @@
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    span {
+        font-size: 20px;
+    }
+}
+
+.content {
+    .filter-fields {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    button {
+        float: right;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 550px) {
+    .content {
+        .filter-fields {
+            mat-form-field {
+                width: 100%;
+            }
+        }
+    }
+}

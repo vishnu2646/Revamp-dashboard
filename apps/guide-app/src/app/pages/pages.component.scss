@@ -1,0 +1,64 @@
+@import "../../../../../styles/global.scss";
+
+.container {
+    height: 100%;
+
+    mat-drawer {
+        &.mat-drawer-opened {
+            width: 250px;
+
+            h2 {
+                text-align: center;
+                color: $primary;
+            }
+
+            mat-expansion-panel {
+                &.mat-expansion-panel:not([class*=mat-elevation-z]) {
+                    box-shadow: none;
+                }
+
+                ul {
+                    list-style: none;
+                    padding: 0px;
+                    margin: 0px;
+
+                    li {
+                        padding: 10px;
+                    }
+                }
+            }
+
+            .links {
+                mat-expansion-panel {
+                    padding: 0px;
+
+                    ul {
+                        padding-left: 0px;
+
+                        li {
+                            display: flex;
+                            align-items: center;
+                            gap: 20px;
+                            list-style: none;
+                            padding-left: 5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    mat-drawer-content {
+        .header {
+            height: 60px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            padding: 0px 20px;
+        }
+    }
+}
