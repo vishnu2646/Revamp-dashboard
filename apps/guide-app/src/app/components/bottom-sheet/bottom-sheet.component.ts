@@ -56,7 +56,7 @@ export class BottomSheetComponent {
         const fromDate = moment(this.fromDate).format('DD/MM/yyyy');
         const toDate = moment(this.toDate).format('DD/MM/yyyy');
         if(fromDate && toDate) {
-            this.filterService.updateFilter(new Date(fromDate), new Date(toDate), this.field)
+            this.filterService.updateFilter(new Date(fromDate), new Date(toDate))
         }
         this._bottomSheetRef.dismiss();
     }

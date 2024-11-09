@@ -6,12 +6,12 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class DateFilterService {
 
-    private filterSubject = new BehaviorSubject<{ fromDate: Date | null, toDate: Date | null, field: string | '' }>({ fromDate: null, toDate: null, field: '' });
+    private filterSubject = new BehaviorSubject<{ fromDate: Date | null, toDate: Date | null}>({ fromDate: null, toDate: null });
 
     public filter$ = this.filterSubject.asObservable();
 
     // Update filter data
-    public updateFilter(fromDate: Date | null, toDate: Date | null, field: string | '') {
-        this.filterSubject.next({ fromDate, toDate, field });
+    public updateFilter(fromDate: Date | null, toDate: Date | null) {
+        this.filterSubject.next({ fromDate, toDate });
     }
 }

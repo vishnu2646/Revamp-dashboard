@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -8,22 +8,16 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-
-
-import { debounceTime, distinctUntilChanged, lastValueFrom, Subject, Subscription } from 'rxjs';
 
 import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet.component';
-import { ApiService } from '../../services/api/api.service';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IUser } from '../../types/types';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { LoaderComponent } from '../../components/loader/loader.component';
 import { FormsModule } from '@angular/forms';
-import { FilterPipe } from '../../pipes/filter/filter.pipe';
-import { DateFilterService } from '../../services/filter/date-filter.service';
-import moment from 'moment';
+// import { DateFilterService } from '../../services/filter/date-filter.service';
+// import moment from 'moment';
+import { TableComponent } from '../../components/table/table.component';
+import { ModuleRightsService } from '../../services/module/module-rights.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-dataview',
@@ -37,18 +31,13 @@ import moment from 'moment';
         MatCardModule,
         MatDividerModule,
         MatBottomSheetModule,
-        BottomSheetComponent,
         MatTabsModule,
-        MatExpansionModule,
-        MatTableModule,
-        LoaderComponent,
-        MatPaginatorModule,
-        FilterPipe
+        TableComponent
     ],
     templateUrl: './dataview.component.html',
     styleUrl: './dataview.component.scss'
 })
-export class DataviewComponent implements OnInit, AfterViewInit {
+export class DataviewComponent implements OnInit, OnDestroy {
     private _bottomSheet = inject(MatBottomSheet);
 
     private activatedRoute = inject(ActivatedRoute);
@@ -57,52 +46,27 @@ export class DataviewComponent implements OnInit, AfterViewInit {
 
     private router = inject(Router);
 
-    private apiService = inject(ApiService);
+    private rightsService = inject(ModuleRightsService);
 
-    private filterService = inject(DateFilterService);
+    private dateFilterSubscription: Subscription | undefined;
 
-    private filterSubscription: Subscription | null = null;
+    private optionsRightsSubscription: Subscription | undefined;
 
-    private filterSubject: Subject<string> = new Subject<string>();
-
-    private cd = inject(ChangeDetectorRef)
-
-    public userData: IUser = {} as IUser;
+    public userData: any;
 
     public module: String = '';
 
     public isExpanded: boolean = false;
 
-    public panelOpenState = false;
+    public totalCount: number = 0;
 
-    public menuExplorer = [];
+    public filterValue: String = '';
 
-    public tempExplorer = [];
+    public isFilterApplied: boolean = false;
 
-    public menuExplorerWithKeys: any[] = [];
+    public dateFilterField: String = '';
 
-    public isMenuExplorerDataLoading = false;
-
-    public menuExplorerCount = 0;
-
-    public togglePaginator = false;
-
-    public filterValue = '';
-
-    public isDateFilterApplied = false;
-
-    // Include 'actions' in the displayed columns
-    public displayedColumns: String[] = [];
-
-    public optionsRights: any = {};
-
-    public dataSource: MatTableDataSource<any> = new MatTableDataSource();
-
-    // Pagination settings
-    public pageSize: number = 5;
-
-    @ViewChild(MatPaginator)
-    public paginator!: MatPaginator;
+    public optionsRights: any;
 
     constructor() {
         this.router.events.subscribe((val)  => {
@@ -110,180 +74,97 @@ export class DataviewComponent implements OnInit, AfterViewInit {
                 window.location.reload();
             }
         });
-
-        this.filterSubject.pipe(
-            debounceTime(300),
-            distinctUntilChanged()
-        ).subscribe(value => {
-            this.filterValue = value;
-        });
     }
 
-    public ngOnInit() {
+    public ngOnInit(): void {
         this.activatedRoute.queryParams.subscribe(params => {
             this.module = params['module'];
         });
-        this.handleGetUserData();
-        this.handleGetMenuExplorer();
 
-        this.filterSubscription = this.filterService.filter$.subscribe(filter => {
-            if (filter.fromDate && filter.toDate && filter.field) {
-                this.filterByDate(filter.fromDate, filter.toDate, filter.field);
-            }
+        this.optionsRightsSubscription = this.rightsService.rights$.subscribe((value: any) => {
+            this.optionsRights = value;
+        });
+
+        this.handleGetUserData();
+
+        this.dateFilterSubscription = this.rightsService.dateFilters$.subscribe((value: String) => {
+            this.dateFilterField = value;
         });
     }
 
-    public ngAfterViewInit() {
-        this.dataSource.paginator = this.paginator;
+    public ngAfterViewInit(): void {
+
     }
 
-    public handleGetUserData() {
-        const data: IUser = this.userService.getCookieData() as IUser;
-        if(data) {
-            this.userData = data;
-        } else {
-            this.router.navigate(['/auth/login']);
+    public ngOnDestroy() {
+        // Unsubscribe to prevent memory leaks
+        if (this.dateFilterSubscription) {
+            this.dateFilterSubscription.unsubscribe();
+        }
+
+        if(this.optionsRightsSubscription) {
+            this.optionsRightsSubscription.unsubscribe();
         }
     }
 
-    public async handleGetMenuExplorer(): Promise<void> {
-        this.isMenuExplorerDataLoading = !this.isMenuExplorerDataLoading;
-
-        try {
-            const responseData = await lastValueFrom(this.apiService.getMenuExplorerService(this.module, this.userData.UsrId));
-            if(responseData && responseData['CheckMenuExplr']) {
-                this.menuExplorer = responseData['CheckMenuExplr'].Table;
-                this.tempExplorer = responseData['CheckMenuExplr'].Table;
-                this.menuExplorerCount = responseData['CheckMenuExplr'].Table.length;
-                this.optionsRights = responseData['CheckMenuExplr'].Table3[0];
-                if(this.optionsRights['Rights_Edit'] || this.optionsRights['Right_History'] || this.optionsRights['Rights_Comment']){
-                    this.displayedColumns = [...this.objectKeys(this.menuExplorer[0]), 'actions'];
-                }
-                this.dataSource.data = this.menuExplorer;
-            }
-        } catch (error) {
-            console.log(error);
-        } finally {
-            this.isMenuExplorerDataLoading = !this.isMenuExplorerDataLoading;
-        }
-    }
-
-    public objectKeys(obj: any): string[] {
-        if(obj) {
-            return Object.keys(obj);
-        } else {
-            return [];
-        }
-    }
-
-    public trackByIndex(index: number, item: any): any {
-        return index;  // You can return a unique identifier if available
-    }
-
-    public getObjectKeyValue(obj: any, index: number): String {
-        const keys = Object.keys(obj);
-        return keys[index];
-    }
-
-    public getObjectValue(obj: any, index: number): string {
-        const keys = Object.keys(obj);
-        return obj[keys[index]];
-    }
-
-    public onFocus() {
+    public toggleSearchField(): void {
         this.isExpanded = true;
     }
 
-    public onBlur() {
-        // Check if input is empty; if so, collapse the search
+    public closeSearchField(): void{
         const input = document.getElementById('search') as HTMLInputElement;
         if (!input.value) {
             this.isExpanded = false;
+        } else {
+            if(this.filterValue) {
+                this.updateUrlWithFilter();
+            } else {
+                this.filterValue = '';
+            }
         }
     }
 
-    public onInput() {
-        this.isExpanded = true; // Keep expanded when there's input
+    public handleClearFilters() {
+        if(this.isFilterApplied) {
+            this.isFilterApplied = false
+        }
     }
 
-    public openFilterSheet() {
+    public handleFilterApplied(event: boolean) {
+        console.log(event);
+    }
+
+    public handleGetUserData(): void {
+        const data: IUser = this.userService.getCookieData() as IUser;
+        if(data) {
+            this.userData = data;
+        }
+    }
+
+    public updateDataLength(length: number): void {
+        this.totalCount = length || 0;
+    }
+
+    public openFilterSheet(): void {
+        this.isFilterApplied = true;
         this._bottomSheet.open(BottomSheetComponent);
     }
 
-    public filterByDate(fromDate: Date, toDate: Date, field: string) {
-        console.log('Filter by date');
-        const startDate = moment(fromDate).format('YYYY-MM-DD');
+    public handleFilterValue(event: Event) {
+        const element = event.target as HTMLInputElement;
+        this.filterValue = element.value;
+    }
 
-        const endDate = moment(toDate).format('YYYY-MM-DD');
+    private updateUrlWithFilter(): void {
 
-        const filteredData = this.menuExplorer.filter((item: any) => {
-            if (!item[field]) {
-                alert(`Date key "${field}" not found in data`)
-                return false;
-            }
-            const itemDate = moment(item[field]).format('YYYY-MM-DD');
+        const currentParams = { ...this.activatedRoute.snapshot.queryParams };
 
-            return itemDate >= startDate && itemDate <= endDate;
+        currentParams['filter'] = this.filterValue;
+
+        this.router.navigate([], {
+            relativeTo: this.activatedRoute,
+            queryParams: currentParams,
+            queryParamsHandling: 'merge',
         });
-
-        // Update the data source with filtered data
-        if(this.togglePaginator) {
-            this.dataSource.data = filteredData;
-        } else {
-            console.log('Filter by date updated', filteredData);
-            this.menuExplorer = filteredData;
-            this.isDateFilterApplied = !this.isDateFilterApplied;
-            this.cd.detectChanges();
-        }
-
-        this.isDateFilterApplied = !this.isDateFilterApplied;
-    }
-
-    public onPageChange(event: any) {
-        const startIndex = event.pageIndex * event.pageSize;
-        const endIndex = startIndex + event.pageSize;
-        this.dataSource.data = this.menuExplorer.slice(startIndex, endIndex);
-    }
-
-    public handleTogglePaginator(type: String) {
-        if(type === 'grid') {
-            this.togglePaginator = false;
-        } else {
-            this.togglePaginator = true;
-            this.menuExplorer = this.tempExplorer;
-            this.onPageChange({
-                length: this.menuExplorer.length,
-                pageIndex: 0,
-                pageSize: this.pageSize,
-                previousPageIndex: 0
-            });
-            this.cd.detectChanges();
-        }
-    }
-
-    public handleAction(type: String, row: any) {
-        console.log(type, row);
-    }
-
-    public onFilterChange(value: string) {
-        this.filterSubject.next(value);
-    }
-
-    public applyFilter(event: any) {
-        if(this.togglePaginator) {
-            this.filterValue = (event.target as HTMLInputElement).value;
-            this.dataSource.filter = this.filterValue.trim().toLowerCase();
-        }
-    }
-
-    public handleClearFilter() {
-        // Toggle the filter flag
-        this.isDateFilterApplied = false;
-
-        // Reset the menuExplorer to the original data
-        this.menuExplorer = [...this.tempExplorer];  // Create a new array reference
-
-        // Manually trigger change detection to ensure UI is updated
-        this.cd.detectChanges();
     }
 }

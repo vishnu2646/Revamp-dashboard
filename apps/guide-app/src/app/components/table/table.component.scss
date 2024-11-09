@@ -1,0 +1,26 @@
+@import "../../../../../../styles/variables";
+
+.table-container {
+    position: relative;
+    min-height: 200px;
+    max-height: 400px;
+    overflow: auto;
+
+    table {
+        td, th {
+            overflow: hidden;
+            max-width: 150px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            mat-icon {
+                margin-right: 10px;
+                cursor: pointer;
+
+                &.comment {
+                    color: $primary;
+                }
+            }
+        }
+    }
+}

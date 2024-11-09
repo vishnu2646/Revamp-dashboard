@@ -50,7 +50,7 @@ export class LoginComponent {
     public user = {
         UsrName: '',
         UsrPwd: '',
-        ComCode: 1,
+        ComCode: 0,
         SessionId: '',
         IPAddress: '',
         ComId: 'GRANT000000000000001',
@@ -58,7 +58,6 @@ export class LoginComponent {
 
     public ngOnInit() {
         const data: IUser | string = this.userService.getCookieData() as IUser | string;
-        console.log(data);
         if(data !== "No cookie data") {
             this.router.navigate(['/dashboard']);
         }
@@ -77,9 +76,9 @@ export class LoginComponent {
 
     public async handleLogin() {
         try {
-            const repsonseData: IUserInfo = await lastValueFrom(this.userService.loginService(this.user));
-            if(repsonseData && repsonseData.Table[0]) {
-                this.userService.setCookie(repsonseData.Table[0]);
+            const repsonseData: any = await lastValueFrom(this.userService.loginService(this.user));
+            if(repsonseData && repsonseData['GetLoginApi']) {
+                this.userService.setCookie(repsonseData['GetLoginApi'].Table[0]);
                 this.router.navigate(['/dashboard']);
             }
         } catch (error) {

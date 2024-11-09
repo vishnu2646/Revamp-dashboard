@@ -13,10 +13,10 @@ export class ApiService {
     private baseUrl = 'http://rx2025apiservice.revampapps.com';
 
     public getMenuService(id: number): Observable<any> {
-        return this.httpClient.get(`${this.baseUrl}/GetMenuLogin?Userid=${id}&databaseKey=TRADEDEMO`)
+        return this.httpClient.get(`${this.baseUrl}/GetMenuLogin?Userid=${id}&databaseKey=ANNAM`)
     }
 
     public getMenuExplorerService(mdlId: String, usrId: number): Observable<any> {
-        return this.httpClient.get(`${this.baseUrl}/MenuExplr?MdlId=${mdlId}&UserId=${usrId}&databaseKey=TRADEDEMO`);
+        return this.httpClient.get(`${this.baseUrl}/MenuExplr?MdlId=${mdlId}&UserId=${usrId}&databaseKey=ANNAM`);
     }
 }

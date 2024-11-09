@@ -22,12 +22,6 @@
             <mat-datepicker #toDatePicker></mat-datepicker>
         </mat-form-field>
     </div>
-    <div>
-        <mat-form-field appearance="outline">
-            <mat-label>Enter date column</mat-label>
-            <input matInput type="text" [(ngModel)]="field">
-        </mat-form-field>
-    </div>
     <button mat-raised-button color="accent" (click)="handleDateFilter()">
         <mat-icon>search</mat-icon>
         Apply Filter

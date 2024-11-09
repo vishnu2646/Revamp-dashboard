@@ -31,19 +31,25 @@ export class UserserviceService {
     }
 
     public logoutService(): void {
-        this.cookieService.delete('user');
+        // this.handleLogout(id, userId);
+        this.cookieService.deleteAll('user');
     }
 
     public loginService(data: any): Observable<IUserInfo> {
-        return this.http.post(`${this.baseUrl}/LoginApi?databaseKey=TRADEDEMO`, data) as Observable<IUserInfo>;
+        const { UsrName, UsrPwd, ComCode, SessionId, IPAddress, ComId } = data;
+        return this.http.get(`${this.baseUrl}/LoginApi?UsrName=${UsrName}&UsrPwd=${UsrPwd}&ComCode=${ComCode}&SessionId=${SessionId}&IPAddress=${IPAddress}&ComId=${ComId}&databaseKey=ANNAM`) as Observable<IUserInfo>;
     }
 
     public getUserInfoService(userName: String, password: String, email: String): Observable<Object> {
-        return this.http.get(`${this.baseUrl}/ResetPwdApi?IN_UserName=${userName}&IN_PassWordStr=${password}&IN_EmailId=${email}&databaseKey=TRADEDEMO`);
+        return this.http.get(`${this.baseUrl}/ResetPwdApi?IN_UserName=${userName}&IN_PassWordStr=${password}&IN_EmailId=${email}&databaseKey=ANNAM`);
     }
 
     public updatePasswordInfoService(data: any) {
         const { username, OldPassword, password } = data;
-        return this.http.get(`${this.baseUrl}/ChangePwdApi?Username=${username}&OldPassWord=${OldPassword}&NewPassWord=${password}&databaseKey=TRADEDEMO`)
+        return this.http.get(`${this.baseUrl}/ChangePwdApi?Username=${username}&OldPassWord=${OldPassword}&NewPassWord=${password}&databaseKey=ANNAM`)
     }
+
+    // private handleLogout(id: String, userId: number) {
+    //     this.http.get(`${this.baseUrl}/LogoutApi?LogId=${id}&UserId=${userId}&LogOutTime=null&databaseKey=ANNAM`)
+    // }
 }

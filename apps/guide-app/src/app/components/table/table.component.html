@@ -1,0 +1,33 @@
+<div class="table-container">
+    <ng-container *ngIf="isLoadingResults; else tableTemplate">
+        <app-loader></app-loader>
+    </ng-container>
+    <ng-template #tableTemplate>
+        <ng-container *ngIf="dataSource.data.length > 0; else noDataTemplate">
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                <!-- Dynamically generate columns -->
+                <ng-container *ngFor="let column of displayedColumns">
+                    <ng-container [matColumnDef]="column">
+                        <th mat-header-cell *matHeaderCellDef> {{ column | titlecase }} </th>
+                        <td mat-cell *matCellDef="let element" (click)="handleGetDetail(element)"> {{ element[column] }} </td>
+                    </ng-container>
+                </ng-container>
+
+                <!-- Header and Row Definitions -->
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </ng-container>
+        <ng-template #noDataTemplate>
+            <div class="no-data">
+                <p>No data to display</p>
+            </div>
+        </ng-template>
+    </ng-template>
+</div>
+<!-- Pagination Controls -->
+<mat-paginator
+    [length]="dataSource.data.length"
+    [pageSize]="10"
+    [pageSizeOptions]="[5, 10, 20]">
+</mat-paginator>

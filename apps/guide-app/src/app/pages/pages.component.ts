@@ -52,8 +52,6 @@ export class PagesComponent implements OnInit {
         const data: IUser = this.userService.getCookieData() as IUser;
         if(data) {
             this.userData = data;
-        } else {
-            this.router.navigate(['/auth/login']);
         }
     }
 
@@ -62,7 +60,7 @@ export class PagesComponent implements OnInit {
         try {
             const responseData = await lastValueFrom(this.apiService.getMenuService(this.userData.UsrId));
             if(responseData && responseData['GetMenuLogin']) {
-                this.groupData = groupData(responseData['GetMenuLogin'].Table, 'Mnu_Group');
+                this.groupData = groupData(responseData['GetMenuLogin'].Table, 'MdlType');
                 if(this.groupData) {
                     this.groupedKeys = Object.keys(this.groupData);
                 }
