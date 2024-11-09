@@ -1,0 +1,243 @@
+@import "../../../../styles/variables";
+
+::ng-deep .data-viewer .mat-mdc-tab-body-wrapper .mat-mdc-tab-body.mat-mdc-tab-body-active {
+    width: 700px;
+}
+
+.data-viewer {
+    margin-top: 70px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .left {
+        flex-grow: 2;
+        flex-basis: 0;
+        width: 100%;
+
+        mat-card {
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
+
+            mat-card-content {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+
+                .actions {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-direction: row-reverse;
+                    width: 100%;
+
+                    .icons {
+                        display: flex;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        gap: 20px;
+
+                        mat-icon {
+                            width: 50px;
+                            height: 50px;
+                            font-size: 24px;
+                            color: $primary;
+                            background-color: $primary-opacity;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            &:hover {
+                                cursor: pointer;
+                                box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+                                transition: all .4s ease;
+                                -webkit-transition: all .4s ease;
+                            }
+                        }
+                    }
+
+                    .search {
+                        display: flex;
+                        align-items: center;
+                        position: relative;
+                        transition: width 0.3s ease;
+                        overflow: hidden;
+
+                        &.expanded {
+                            width: 275px;
+                        }
+
+                        .search-icon {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 30px;
+                            padding: 10px;
+                            border-radius: 50%;
+                            cursor: pointer;
+                            background-color: $purple-navy;
+                            color: #ffffff;
+                        }
+
+                        .search-input {
+                            border: none;
+                            outline: none;
+                            padding: 10px;
+                            font-size: 16px;
+                            width: 100%;
+                            transition: opacity 0.3s ease;
+                            opacity: 0;
+                            visibility: hidden;
+                            border: 0;
+                            border-bottom: 2px solid $purple-navy;
+                            transition: width 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+                            margin-right: 10px;
+                            transform: scaleX(0);
+                        }
+
+                        &.expanded .search-input {
+                            opacity: 1;
+                            visibility: visible;
+                            transform: scaleX(1);
+                        }
+                    }
+                }
+            }
+        }
+
+        .contents {
+            margin-top: 20px;
+            width: 100%;
+
+            mat-tab-group {
+
+                .grid-contents {
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 20px;
+                    margin-bottom: 10px;
+
+                    mat-accordion {
+                        width: 350px;
+
+                        mat-expansion-panel {
+                            .details {
+                                table {
+                                    tr {
+                                        th, td {
+                                            text-align: left;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .list-content {
+                    table {
+                        td {
+                            overflow: hidden;
+                            max-width: 150px;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+
+                            mat-icon {
+                                margin-right: 10px;
+                                cursor: pointer;
+
+                                &.comment {
+                                    color: $primary;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .right {
+        flex: 1;
+
+        mat-card {
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
+
+            mat-card-content {
+                .data-count {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    h5 {
+                        font-size: 16px;
+                        font-weight: 400;
+                        color: $purple-navy;
+                    }
+
+                    span {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: $purple-navy;
+                    }
+                }
+            }
+
+            mat-card-footer {
+                padding: 20px;
+                margin: 0 auto;
+            }
+        }
+    }
+}
+
+@media (max-width: 992px) {
+    .data-viewer {
+        .left, .right {
+            width: 100%;
+        }
+    }
+}
+
+@media (max-width: 640px) {
+    .data-viewer {
+        .left {
+            mat-card {
+                mat-card-content {
+                    .actions {
+                        flex-direction: column-reverse;
+                        gap: 20px;
+                    }
+                }
+            }
+
+            .contents {
+                mat-tab-group {
+                    .grid-contents {
+                        mat-accordion {
+                            width: 100%;
+
+                            mat-expansion-panel {
+                                .details {
+                                    table {
+                                        tr {
+                                            td {
+                                                white-space: nowrap;
+                                                text-overflow:ellipsis;
+                                                overflow: hidden;
+                                                max-width: 150px;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
