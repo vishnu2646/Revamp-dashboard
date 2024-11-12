@@ -11,13 +11,13 @@
 }
 
 @mixin spaceAround {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 
 @mixin spaceEven {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
 }

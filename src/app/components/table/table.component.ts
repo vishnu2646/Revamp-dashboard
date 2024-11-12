@@ -39,6 +39,13 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     private filterSubscription: Subscription | null = null;
 
+    private detailsData = {
+        mdlId: '',
+        primeId: ''
+    }
+
+    public title: String = '';
+
     public isLoadingResults = false;
 
     public displayedColumns: string[] = [];
@@ -51,7 +58,7 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     public visiblityRights: any;
 
-    public dateFilter: String = ''
+    public dateFilter: String = '';
 
     @Input()
     public isFilterApplied: boolean = false;
@@ -105,7 +112,6 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
         this.toggleLoadingState();
         try {
             const responseData = await this.fetchMenuExplorerData();
-
             if (this.isValidResponse(responseData)) {
                 this.processTable1Data(responseData['CheckMenuExplr'].Table1);
                 this.processTableData(responseData['CheckMenuExplr'].Table);
@@ -125,7 +131,7 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     public handleGetDetail(row: any) {
         this.moduleRightsSerivice.setSelectedData(row);
-        this.router.navigateByUrl('/dashboard/details', { state: row });
+        this.router.navigateByUrl('/dashboard/details', { state: { idData: this.detailsData, data: row, title: this.title } });
     }
 
     private filterByDate(fromDate: any, toDate: any): void {
@@ -155,7 +161,13 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     public processTable1Data(data: any) {
         const isExplorerNeeded = data[0];
+        console.log(isExplorerNeeded);
         this.visiblityRights = isExplorerNeeded.IN_IsExplrNeed.split('|');
+        this.title = isExplorerNeeded.IN_TitleStr;
+        this.detailsData = {
+            mdlId: this.module.toString(),
+            primeId: isExplorerNeeded.IN_PrimdId
+        }
     }
 
     private processTableData(tableData: any[]): void {

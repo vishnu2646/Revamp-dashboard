@@ -19,4 +19,8 @@ export class ApiService {
     public getMenuExplorerService(mdlId: String, usrId: number): Observable<any> {
         return this.httpClient.get(`${this.baseUrl}/MenuExplr?MdlId=${mdlId}&UserId=${usrId}&databaseKey=ANNAM`);
     }
+
+    public getIndividualDataService(mdlId: String, id: number, usrId: number): Observable<any> {
+        return this.httpClient.get(`${this.baseUrl}/GetIndividualData?MdlId=${mdlId}&ID=${id}&UserId=${usrId}&databaseKey=ANNAM`);
+    }
 }

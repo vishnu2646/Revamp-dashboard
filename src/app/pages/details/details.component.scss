@@ -1,0 +1,74 @@
+.details-section {
+    margin-top: 70px;
+    padding: 20px;
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+
+        mat-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            mat-card-header {
+                .header {
+                    display: flex;
+                    align-items: center;
+                    gap: 20px;
+                    flex-wrap: wrap;
+                }
+            }
+
+            mat-card-content {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .details {
+                border-collapse: collapse;
+
+                td {
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                }
+            }
+
+            mat-card-footer {
+                padding: 20px;
+            }
+        }
+    }
+
+    .activity-card {
+        margin-top: 20px;
+
+        .action {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .action-details {
+            ul {
+                list-style: none;
+            }
+        }
+    }
+
+    .comments-details {
+        margin-top: 20px;
+
+        .comments {
+            border-collapse: collapse;
+            td, th {
+                border: 1px solid #ccc;
+                padding: 10px;
+            }
+        }
+    }
+}

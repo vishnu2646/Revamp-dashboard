@@ -1,1 +1,130 @@
-<p>details works!</p>
+<section class="details-section">
+    <ng-container *ngIf="loading; else detailTemplate">
+        <app-loader></app-loader>
+    </ng-container>
+    <ng-template #detailTemplate>
+        <mat-toolbar color="primary">
+            <span>{{ title }} Details</span>
+        </mat-toolbar>
+        <div class="grid">
+            <mat-card class="primary-card">
+                <mat-card-header>
+                    <div class="header">
+                        <h3>Details</h3>
+                        <div class="icons">
+                            <button mat-icon-button color="accent" matTooltip="Report" matTooltipPosition="above" *ngIf="optionRights['Rights_Report'] === 1">
+                                <mat-icon>print</mat-icon>
+                            </button>
+                            <button mat-icon-button color="primary" matTooltip="Comments" matTooltipPosition="above" (click)="handleToggleOptionsState('comment')" *ngIf="optionRights['Rights_Comment'] === 1" [matBadge]="commentsData.length">
+                                <mat-icon>comment</mat-icon>
+                            </button>
+                            <button mat-icon-button matTooltip="History" matTooltipPosition="above" (click)="handleToggleOptionsState('history')" *ngIf="optionRights['Right_History'] === 1" [matBadge]="historyData.length">
+                                <mat-icon>history</mat-icon>
+                            </button>
+                            <button mat-icon-button matTooltip="Edit" matTooltipPosition="above" color="warn">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </mat-card-header>
+                <mat-card-content>
+                    <table class="details">
+                        <tr *ngFor="let column of selectedDataFirstHalf | keyvalue">
+                            <td><strong>{{ column.key }}</strong></td>
+                            <td style="text-align: right;">{{ column.value || 'N/A' }}</td>
+                        </tr>
+                    </table>
+
+                    <table class="details">
+                        <tr *ngFor="let column of selectedDataSecondHalf | keyvalue">
+                            <td><strong>{{ column.key }}</strong></td>
+                            <td style="text-align: right;">{{ column.value || 'N/A' }}</td>
+                        </tr>
+                    </table>
+                </mat-card-content>
+                <mat-card-footer>
+                    <h3>Actions</h3>
+                    <div class="icons">
+                        <button mat-icon-button color="accent" matTooltip="Report" matTooltipPosition="above" *ngIf="optionRights['Rights_Report'] === 1">
+                            <mat-icon>print</mat-icon>
+                        </button>
+                        <button mat-icon-button color="primary" matTooltip="Comment" matTooltipPosition="above" (click)="handleToggleOptionsState('comment')" *ngIf="optionRights['Rights_Comment'] === 1" [matBadge]="commentsData.length">
+                            <mat-icon>comment</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="History" matTooltipPosition="above" (click)="handleToggleOptionsState('history')" *ngIf="optionRights['Right_History'] === 1" [matBadge]="historyData.length">
+                            <mat-icon>history</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" matTooltip="Edit" matTooltipPosition="above">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-footer>
+            </mat-card>
+        </div>
+
+        <mat-card class="activity-card" *ngIf="toggleOptionsState.history">
+            <mat-card-header>
+                <mat-card-title>Activity Log</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <ng-container *ngIf="historyData.length > 0; else noHistoryTemplate">
+                    <mat-list>
+                        <mat-list-item *ngFor="let history of historyData">
+                            <div matListItemTitle class="action">
+                                <mat-icon mat-list-icon>history</mat-icon>
+                                {{ parseDate(history.ActionTime) | date: 'medium' }}
+                            </div>
+                            <div class="action-details">
+                                <ul>
+                                    <li>
+                                        <span>{{ history.Action }} - {{ history.Status }} / By {{ history.Username }} </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </mat-list-item>
+                    </mat-list>
+                </ng-container>
+                <ng-template #noHistoryTemplate>
+                    <p>No History Records to display</p>
+                </ng-template>
+            </mat-card-content>
+        </mat-card>
+
+        <div class="comments-details" *ngIf="toggleOptionsState.comment">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Comments</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <ng-container *ngIf="commentsData.length > 0; else noCommentTemplate">
+                        <table class="comments">
+                            <thead>
+                                <tr>
+                                    <th>Action Time</th>
+                                    <th>Action</th>
+                                    <th>Username</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let comment of commentsData">
+                                    <td>{{ comment.Subject }}</td>
+                                    <td>{{ parseDate(comment.Date) | date: 'medium' }} / By</td>
+                                    <td>{{ comment.By }}</td>
+                                    <td>
+                                        <!-- <button mat-icon-button> -->
+                                            <mat-icon color="primary">edit</mat-icon>
+                                        <!-- </button> -->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </ng-container>
+                    <ng-template #noCommentTemplate>
+                        <p>No Comments to Display</p>
+                    </ng-template>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </ng-template>
+</section>
