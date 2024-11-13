@@ -15,24 +15,22 @@ export class ApiService {
 
     private userService = inject(UserserviceService);
 
+    private configService = inject(ConfigService);
+
     private baseUrl = 'http://rx2025apiservice.revampapps.com';
 
-    constructor(private configService: ConfigService) {
-        const key = sessionStorage.getItem('key');
-        if(key) {
-            this.key = key;
-        }
-    }
-
     public getMenuService(id: number): Observable<any> {
-        return this.httpClient.get(`${this.baseUrl}/GetMenuLogin?Userid=${id}&databaseKey=${this.key}`)
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/GetMenuLogin?Userid=${id}&databaseKey=${key}`)
     }
 
     public getMenuExplorerService(mdlId: String, usrId: number): Observable<any> {
-        return this.httpClient.get(`${this.baseUrl}/MenuExplr?MdlId=${mdlId}&UserId=${usrId}&databaseKey=${this.key}`);
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/MenuExplr?MdlId=${mdlId}&UserId=${usrId}&databaseKey=${key}`);
     }
 
     public getIndividualDataService(mdlId: String, id: number, usrId: number): Observable<any> {
-        return this.httpClient.get(`${this.baseUrl}/GetIndividualData?MdlId=${mdlId}&ID=${id}&UserId=${usrId}&databaseKey=${this.key}`);
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/GetIndividualData?MdlId=${mdlId}&ID=${id}&UserId=${usrId}&databaseKey=${key}`);
     }
 }

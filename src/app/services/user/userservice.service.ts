@@ -34,8 +34,8 @@ export class UserserviceService {
     }
 
     public logoutService(id: number, userId: number): void {
+        this.cookieService.delete('user', '/');
         this.handleLogout(id, userId);
-        this.cookieService.delete('user');
     }
 
     public loginService(data: any): Observable<IUserInfo> {

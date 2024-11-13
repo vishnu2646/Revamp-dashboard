@@ -1,23 +1,36 @@
 <div class="table-container">
-    <h2>{{ title || '' }}</h2>
+    <div class="header">
+        <h2>{{ title || '' }}</h2>
+        <p>Total Data counts <b>{{ dataSource.data.length }}</b></p>
+    </div>
+    <div class="range" *ngIf="daterange.length > 0">
+        <span>{{ daterange }}</span>
+    </div>
+    <div class="totals">
+        <p *ngFor="let tot of totals | keyvalue">
+            Sum of <b>{{ tot.key }}</b> is <b>{{ tot.value }}</b>
+        </p>
+    </div>
     <ng-container *ngIf="isLoadingResults; else tableTemplate">
         <app-loader></app-loader>
     </ng-container>
     <ng-template #tableTemplate>
         <ng-container *ngIf="dataSource.data.length > 0; else noDataTemplate">
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-                <!-- Dynamically generate columns -->
-                <ng-container *ngFor="let column of displayedColumns">
-                    <ng-container [matColumnDef]="column">
-                        <th mat-header-cell *matHeaderCellDef> {{ column | titlecase }} </th>
-                        <td mat-cell *matCellDef="let element" (click)="handleGetDetail(element)"> {{ element[column] }} </td>
+            <div class="table-wrapper">
+                <table mat-table [dataSource]="dataSource">
+                    <!-- Dynamically generate columns -->
+                    <ng-container *ngFor="let column of displayedColumns">
+                        <ng-container [matColumnDef]="column">
+                            <th mat-header-cell *matHeaderCellDef> {{ column | titlecase }} </th>
+                            <td mat-cell *matCellDef="let element" (click)="handleGetDetail(element)"> {{ element[column] }} </td>
+                        </ng-container>
                     </ng-container>
-                </ng-container>
 
-                <!-- Header and Row Definitions -->
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
+                    <!-- Header and Row Definitions -->
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
         </ng-container>
         <ng-template #noDataTemplate>
             <div class="no-data">
@@ -30,5 +43,5 @@
 <mat-paginator
     [length]="dataSource.data.length"
     [pageSize]="10"
-    [pageSizeOptions]="[5, 10, 20]">
+    [pageSizeOptions]="[5, 10, 20, 50, 100]">
 </mat-paginator>

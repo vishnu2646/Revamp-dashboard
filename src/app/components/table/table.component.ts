@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, inject, output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, inject, OnDestroy } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ApiService } from '../../services/api/api.service';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +13,7 @@ import { DateFilterService } from '../../services/filter/date-filter.service';
 import { ModuleRightsService } from '../../services/module/module-rights.service';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IUser } from '../../types/types';
+import { isDefined } from '../../utils/utils';
 
 @Component({
     selector: 'app-table',
@@ -28,7 +29,7 @@ import { IUser } from '../../types/types';
     templateUrl: './table.component.html',
     styleUrl: './table.component.scss'
 })
-export class TableComponent implements OnInit, OnChanges, AfterViewInit {
+export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     private  apiService = inject(ApiService);
 
     private activatedRoute = inject(ActivatedRoute);
@@ -42,6 +43,8 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
     private moduleRightsSerivice = inject(ModuleRightsService);
 
     private filterSubscription: Subscription | null = null;
+
+    private queryParamsSubscription: Subscription | null = null;
 
     private detailsData = {
         mdlId: '',
@@ -68,9 +71,10 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     public userData: any;
 
+    public daterange = '';
+
     @Input()
     public isFilterApplied: boolean = false;
-
 
     @Input()
     public module: String = '';
@@ -79,30 +83,22 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
     public paginator!: MatPaginator;
 
     @Output()
-    public dataLength = new EventEmitter<number>();
-
-    @Output()
     public filterApplied = new EventEmitter<boolean>();
 
-    constructor() {
+    public ngOnInit(): void {
         this.handleGetUserData();
-        this.router.events.subscribe((val)  => {
-            if(val instanceof NavigationEnd) {
-                this.module = val.url.split("=")[1];
+
+        this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe(params => {
+            this.filterValue = params['filter'];
+            this.module = params['module'];
+            if(isDefined(this.module)) {
                 this.handleGetMenuExplorerData(this.module)
             }
         });
-    }
-
-    public ngOnInit(): void {
-        this.activatedRoute.queryParams.subscribe(params => {
-            this.filterValue = params['filter'];
-        });
-
-        this.handleGetMenuExplorerData();
 
         this.filterSubscription = this.filterService.filter$.subscribe(filter => {
             if (filter.fromDate && filter.toDate) {
+                this.daterange = `Filtered data from ${moment(filter.fromDate).format('L')} to ${moment(filter.toDate).format('L')}`;
                 this.filterByDate(filter.fromDate, filter.toDate);
             }
         });
@@ -121,6 +117,15 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
         } else {
             this.isFilterApplied = false;
             this.dataSource.data = [...this.tempData];
+            this.daterange = '';
+        }
+    }
+
+    public ngOnDestroy() {
+        if(this.filterSubscription) {
+            this.filterSubscription.unsubscribe();
+        } else if(this.queryParamsSubscription) {
+            this.queryParamsSubscription.unsubscribe();
         }
     }
 
@@ -131,7 +136,7 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
         }
     }
 
-    public async handleGetMenuExplorerData(module?: String): Promise<void> {
+    public async handleGetMenuExplorerData(module: String): Promise<void> {
         this.toggleLoadingState();
         try {
             const responseData = await this.fetchMenuExplorerData(module);
@@ -141,6 +146,7 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
                 }
                 this.processTableData(responseData['CheckMenuExplr'].Table);
                 this.processTableRights(responseData['CheckMenuExplr'].Table1[0]);
+                this.getTotals(responseData['CheckMenuExplr'].Table1);
 
                 this.processTable3Data(responseData['CheckMenuExplr'].Table3[0])
                 this.updatePaginator();
@@ -160,13 +166,12 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     private filterByDate(fromDate: any, toDate: any): void {
-        const startDate = moment(fromDate).format('L');
-
-        const endDate = moment(toDate).format('L');
+        const startDate = new Date(fromDate);
+        const endDate = new Date(toDate);
 
         const filteredData = this.dataSource.data.filter((item: any) => {
-            const itemDate = moment(item[this.dateFilter.toString()]).format('L');
-            return itemDate > startDate && itemDate < endDate;
+            const itemDate = new Date(item[this.dateFilter.toString()]);
+            return itemDate >= startDate && itemDate <= endDate;
         });
 
         this.dataSource.data = filteredData;
@@ -176,10 +181,8 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
         this.isLoadingResults = !this.isLoadingResults;
     }
 
-    private async fetchMenuExplorerData(module?: String) {
-        if(!module) {
-            return lastValueFrom(this.apiService.getMenuExplorerService(this.module, this.userData.UsrId));
-        } else {
+    private async fetchMenuExplorerData(module: String) {
+        if(module.length > 0) {
             return lastValueFrom(this.apiService.getMenuExplorerService(module, this.userData.UsrId));
         }
     }
@@ -197,6 +200,34 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
             mdlId: this.module.toString(),
             primeId: explorer.IN_PrimdId
         }
+    }
+
+    public totals: any;
+
+    private getTotals(data: any) {
+        const values = data[0].IN_DisplayFormat.split('|');
+        const arr: String[] = [];
+
+        for(let i = 0; i < values.length; i++) {
+            if(values[i] === 'R-N-2') {
+                arr.push(this.displayedColumns[i]);
+            }
+        };
+
+        const totals = arr.reduce((acc: any, column: String) => {
+            acc[column.toString()] = 0;
+            return acc;
+        }, {});
+
+        this.dataSource.data.forEach(item => {
+            arr.forEach((col: String) => {
+                if(item[col.toString()] !== undefined) {
+                    totals[col.toString()] += item[col.toString()];
+                }
+            })
+        });
+
+        this.totals = totals;
     }
 
     private processTableData(tableData: any[]): void {
@@ -219,7 +250,6 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     private updatePaginator(): void {
-        this.dataLength.emit(this.dataSource.data.length);
         this.dataSource.paginator = this.paginator;
     }
 

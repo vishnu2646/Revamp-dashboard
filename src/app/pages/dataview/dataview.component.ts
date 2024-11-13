@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -48,6 +48,8 @@ export class DataviewComponent implements OnInit, OnDestroy {
 
     private rightsService = inject(ModuleRightsService);
 
+    private cd = inject(ChangeDetectorRef);
+
     private dateFilterSubscription: Subscription | undefined;
 
     private optionsRightsSubscription: Subscription | undefined;
@@ -57,8 +59,6 @@ export class DataviewComponent implements OnInit, OnDestroy {
     public module: String = '';
 
     public isExpanded: boolean = false;
-
-    public totalCount: number = 0;
 
     public filterValue: String = '';
 
@@ -81,6 +81,8 @@ export class DataviewComponent implements OnInit, OnDestroy {
 
         this.dateFilterSubscription = this.rightsService.dateFilters$.subscribe((value: String) => {
             this.dateFilterField = value;
+            // console.log(this.dateFilterField);
+            // this.cd.detectChanges();
         });
     }
 
@@ -127,10 +129,6 @@ export class DataviewComponent implements OnInit, OnDestroy {
         if(data) {
             this.userData = data;
         }
-    }
-
-    public updateDataLength(length: number): void {
-        this.totalCount = length || 0;
     }
 
     public openFilterSheet(): void {

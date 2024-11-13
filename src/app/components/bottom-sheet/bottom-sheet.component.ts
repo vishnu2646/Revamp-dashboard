@@ -35,9 +35,9 @@ export class BottomSheetComponent {
 
     private filterService = inject(DateFilterService);
 
-    public fromDate = new Date();
+    public fromDate = '';
 
-    public toDate = new Date();
+    public toDate = '';
 
     public field: string = '';
 
@@ -53,8 +53,8 @@ export class BottomSheetComponent {
     }
 
     public handleDateFilter() {
-        const fromDate = moment(this.fromDate).format('DD/MM/yyyy');
-        const toDate = moment(this.toDate).format('DD/MM/yyyy');
+        const fromDate = this.fromDate;
+        const toDate = this.toDate;
         if(fromDate && toDate) {
             this.filterService.updateFilter(new Date(fromDate), new Date(toDate))
         }

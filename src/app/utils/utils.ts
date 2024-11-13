@@ -8,3 +8,7 @@ export function groupData<T>(data: T[], key: string): Record<string, T[]> {
         return result;
     }, {} as Record<string, T[]>);
 }
+
+export const isDefined = (data: any) => {
+    return typeof data !== 'undefined';
+}

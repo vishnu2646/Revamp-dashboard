@@ -12,8 +12,8 @@
                     </div>
 
                     <!-- {{ optionsRights | json }} -->
-                    <div class="icons" *ngIf="optionsRights?.Rights_New">
-                        <mat-icon>
+                    <div class="icons">
+                        <mat-icon *ngIf="optionsRights?.Rights_New">
                             add
                         </mat-icon>
                         <mat-icon (click)="openFilterSheet()" *ngIf="dateFilterField">
@@ -36,37 +36,17 @@
                     <app-table
                         [module]="module"
                         [isFilterApplied]="isFilterApplied"
-                        (dataLength)="updateDataLength($event)"
                         (filterApplied)="handleFilterApplied($event)"
                     ></app-table>
                 </mat-tab>
-                <mat-tab>
+                <!-- Note: Enable it if needed in future for the addional tabs -->
+                <!-- <mat-tab>
                     <ng-template mat-tab-label>
                         <mat-icon>grid_view</mat-icon>
                     </ng-template>
                     test
-                </mat-tab>
+                </mat-tab> -->
             </mat-tab-group>
         </main>
-    </div>
-    <!-- right -->
-    <div class="right">
-        <mat-card>
-            <mat-card-content>
-                <div class="data-count">
-                    <h5>Total Datas</h5>
-                    <span>{{ totalCount }}</span>
-                </div>
-            </mat-card-content>
-            <mat-divider></mat-divider>
-            <mat-card-footer>
-                <!-- @if(optionsRights['Rights_New']) { -->
-                    <button mat-raised-button color="primary">
-                        <mat-icon>add</mat-icon>
-                        Add New Data
-                    </button>
-                <!-- } -->
-            </mat-card-footer>
-        </mat-card>
     </div>
 </div>

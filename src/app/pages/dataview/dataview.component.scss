@@ -13,8 +13,9 @@
     flex-wrap: wrap;
 
     .left {
-        flex-grow: 2;
-        flex-basis: 0;
+        // NOTE: Enable this flex props if needed for future versions.
+        // flex-grow: 2;
+        // flex-basis: 0;
         width: 100%;
 
         mat-card {
@@ -161,7 +162,8 @@
     }
 
     .right {
-        flex: 1;
+        // NOTE: Enable is if needed for future versions
+        // flex: 1;
 
         mat-card {
             box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
@@ -196,7 +198,8 @@
 
 @media (max-width: 992px) {
     .data-viewer {
-        .left, .right {
+        // add .right if needed in future versions.
+        .left {
             width: 100%;
         }
     }
