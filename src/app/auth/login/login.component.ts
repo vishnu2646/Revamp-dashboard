@@ -12,6 +12,7 @@ import { UserserviceService } from '../../services/user/userservice.service';
 import { IMAGE_CONFIG } from '@angular/common';
 import { IpserviceService } from '../../services/ipService/ipservice.service';
 import { IUser, IUserInfo } from '../../types/types';
+import { LoaderComponent } from '../../components/loader/loader.component';
 
 @Component({
     selector: 'app-login',
@@ -22,7 +23,8 @@ import { IUser, IUserInfo } from '../../types/types';
         MatInputModule,
         MatFormFieldModule,
         MatButtonModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        LoaderComponent
     ],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss',
@@ -46,6 +48,8 @@ export class LoginComponent {
     private ipService = inject(IpserviceService);
 
     public toggleOTPfield: boolean = false;
+
+    public isLoading = false;
 
     public user = {
         UsrName: '',
@@ -75,15 +79,20 @@ export class LoginComponent {
     }
 
     public async handleLogin() {
+        this.isLoading = !this.isLoading;
         try {
             const repsonseData: any = await lastValueFrom(this.userService.loginService(this.user));
             if(repsonseData && repsonseData['GetLoginApi']) {
-                this.userService.setCookie(repsonseData['GetLoginApi'].Table[0]);
+                const dataToCookie = repsonseData['GetLoginApi'].Table[0]
+                dataToCookie['sessionId'] = this.user.SessionId;
+                this.userService.setCookie(dataToCookie);
                 this.router.navigate(['/dashboard']);
             }
         } catch (error) {
             console.log(error);
             this.router.navigate(['/auth/login']);
+        } finally {
+            this.isLoading = !this.isLoading;
         }
     }
 

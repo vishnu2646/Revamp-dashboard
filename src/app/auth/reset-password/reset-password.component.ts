@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
+import { IUser } from '../../types/types';
 
 @Component({
     selector: 'app-reset-password',
@@ -29,6 +30,8 @@ export class ResetPasswordComponent implements OnInit {
 
     private isActive = false;
 
+    private userData: any;
+
     public userInfo = {
         username: '',
         password: '',
@@ -37,6 +40,13 @@ export class ResetPasswordComponent implements OnInit {
 
     public ngOnInit(): void {
         this.userInfo.password = this.generatePassword();
+    }
+
+    public handleGetUserData() {
+        const data: IUser = this.userService.getCookieData() as IUser;
+        if(data) {
+            this.userData = data;
+        }
     }
 
     public async handleResetPassword() {

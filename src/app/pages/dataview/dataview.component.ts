@@ -68,14 +68,6 @@ export class DataviewComponent implements OnInit, OnDestroy {
 
     public optionsRights: any;
 
-    constructor() {
-        this.router.events.subscribe((val)  => {
-            if(val instanceof NavigationEnd) {
-                window.location.reload();
-            }
-        });
-    }
-
     public ngOnInit(): void {
         this.activatedRoute.queryParams.subscribe(params => {
             this.module = params['module'];
@@ -90,10 +82,6 @@ export class DataviewComponent implements OnInit, OnDestroy {
         this.dateFilterSubscription = this.rightsService.dateFilters$.subscribe((value: String) => {
             this.dateFilterField = value;
         });
-    }
-
-    public ngAfterViewInit(): void {
-
     }
 
     public ngOnDestroy() {

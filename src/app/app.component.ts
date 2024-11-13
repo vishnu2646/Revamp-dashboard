@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ConfigService } from './services/config/config.service';
 
 @Component({
     selector: 'app-root',
@@ -11,5 +12,5 @@ import { RouterOutlet } from '@angular/router';
     styleUrl: './app.component.scss'
 })
 export class AppComponent {
-    title = 'guide-app';
+
 }

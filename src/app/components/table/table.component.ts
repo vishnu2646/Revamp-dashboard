@@ -3,7 +3,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Outpu
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ApiService } from '../../services/api/api.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,8 @@ import { LoaderComponent } from "../loader/loader.component";
 import moment from 'moment';
 import { DateFilterService } from '../../services/filter/date-filter.service';
 import { ModuleRightsService } from '../../services/module/module-rights.service';
+import { UserserviceService } from '../../services/user/userservice.service';
+import { IUser } from '../../types/types';
 
 @Component({
     selector: 'app-table',
@@ -35,6 +37,8 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     private filterService = inject(DateFilterService);
 
+    private userService = inject(UserserviceService);
+
     private moduleRightsSerivice = inject(ModuleRightsService);
 
     private filterSubscription: Subscription | null = null;
@@ -43,6 +47,8 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
         mdlId: '',
         primeId: ''
     }
+
+    private typeStr: String = '';
 
     public title: String = '';
 
@@ -60,11 +66,11 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     public dateFilter: String = '';
 
+    public userData: any;
+
     @Input()
     public isFilterApplied: boolean = false;
 
-    @Input()
-    public userData: any;
 
     @Input()
     public module: String = '';
@@ -77,6 +83,16 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     @Output()
     public filterApplied = new EventEmitter<boolean>();
+
+    constructor() {
+        this.handleGetUserData();
+        this.router.events.subscribe((val)  => {
+            if(val instanceof NavigationEnd) {
+                this.module = val.url.split("=")[1];
+                this.handleGetMenuExplorerData(this.module)
+            }
+        });
+    }
 
     public ngOnInit(): void {
         this.activatedRoute.queryParams.subscribe(params => {
@@ -108,12 +124,21 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
         }
     }
 
-    public async handleGetMenuExplorerData(): Promise<void> {
+    public handleGetUserData() {
+        const data: IUser = this.userService.getCookieData() as IUser;
+        if(data) {
+            this.userData = data;
+        }
+    }
+
+    public async handleGetMenuExplorerData(module?: String): Promise<void> {
         this.toggleLoadingState();
         try {
-            const responseData = await this.fetchMenuExplorerData();
+            const responseData = await this.fetchMenuExplorerData(module);
             if (this.isValidResponse(responseData)) {
-                this.processTable1Data(responseData['CheckMenuExplr'].Table1);
+                if(responseData['CheckMenuExplr'].Table1.length > 0) {
+                    this.processTable1Data(responseData['CheckMenuExplr'].Table1);
+                }
                 this.processTableData(responseData['CheckMenuExplr'].Table);
                 this.processTableRights(responseData['CheckMenuExplr'].Table1[0]);
 
@@ -131,7 +156,7 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
 
     public handleGetDetail(row: any) {
         this.moduleRightsSerivice.setSelectedData(row);
-        this.router.navigateByUrl('/dashboard/details', { state: { idData: this.detailsData, data: row, title: this.title } });
+        this.router.navigateByUrl('/dashboard/details', { state: { idData: this.detailsData, data: row, title: this.title, typeStr: this.typeStr } });
     }
 
     private filterByDate(fromDate: any, toDate: any): void {
@@ -151,8 +176,12 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
         this.isLoadingResults = !this.isLoadingResults;
     }
 
-    private async fetchMenuExplorerData() {
-        return lastValueFrom(this.apiService.getMenuExplorerService(this.module, this.userData.UsrId));
+    private async fetchMenuExplorerData(module?: String) {
+        if(!module) {
+            return lastValueFrom(this.apiService.getMenuExplorerService(this.module, this.userData.UsrId));
+        } else {
+            return lastValueFrom(this.apiService.getMenuExplorerService(module, this.userData.UsrId));
+        }
     }
 
     private isValidResponse(responseData: any): boolean {
@@ -160,13 +189,13 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     public processTable1Data(data: any) {
-        const isExplorerNeeded = data[0];
-        console.log(isExplorerNeeded);
-        this.visiblityRights = isExplorerNeeded.IN_IsExplrNeed.split('|');
-        this.title = isExplorerNeeded.IN_TitleStr;
+        const explorer = data[0];
+        this.visiblityRights = explorer.IN_IsExplrNeed.split('|');
+        this.title = explorer.IN_TitleStr;
+        this.typeStr = explorer.IN_TypeStr;
         this.detailsData = {
             mdlId: this.module.toString(),
-            primeId: isExplorerNeeded.IN_PrimdId
+            primeId: explorer.IN_PrimdId
         }
     }
 

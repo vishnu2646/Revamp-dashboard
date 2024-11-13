@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IAttachments, IComments, IHistory, IReport, IUser } from '../../types/types';
 import { lastValueFrom, Subscription } from 'rxjs';
@@ -12,6 +12,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoaderComponent } from "../../components/loader/loader.component";
+import { Router } from '@angular/router';
+import { RouteService } from '../../services/route/route.service';
 
 
 @Component({
@@ -33,11 +35,17 @@ import { LoaderComponent } from "../../components/loader/loader.component";
 })
 
 export class DetailsComponent implements OnInit, OnDestroy {
+    private router = inject(Router);
+
     private userService = inject(UserserviceService);
 
     private apiService = inject(ApiService);
 
+    private routerService = inject(RouteService);
+
     private seletcedDataSubscription: Subscription | undefined;
+
+    private typeStr: String = '';
 
     public title: String = '';
 
@@ -65,6 +73,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
         comment: false,
         history: false,
     }
+
+    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     public ngOnInit() {
         this.handleGetUserData();
@@ -101,13 +111,32 @@ export class DetailsComponent implements OnInit, OnDestroy {
         return new Date(dateStr.toString());
     }
 
+    public handleEditRouter(action: String) {
+        const routeData = sessionStorage.getItem('route');
+        let path;
+        if(routeData) {
+            const { WebPath } = JSON.parse(routeData);
+            path = WebPath.replace("~", '');
+        }
+
+        const { idData, data, title, typeStr } = this.recivedData;
+
+        const linkData =  {
+            mdlId: idData.mdlId,
+            primeId: data[idData.primeId],
+        }
+        const url=`http://annamfoods.revampapps.com${path}?ActionStr=${action}&PrimeIdStr=${linkData.primeId}&TitleStr=${typeStr}&MdlId=${linkData.mdlId}&Module=${title}&User=${this.userData.UsrName}&RefId=${this.userData.sessionId}`
+        window.open(url, '_blank');
+    }
+
     private async getIndividualDetails(): Promise<void> {
-        const { idData, data, title } = this.recivedData;
+        const { idData, data, title, typeStr } = this.recivedData;
         this.title = title;
+        this.typeStr = typeStr
+        this.loading = !this.loading;
         if(this.recivedData) {
-            this.loading = !this.loading;
             try {
-                const responseData = await lastValueFrom(this.apiService.getIndividualDataService(idData.mdlId, data[idData.primeId] ,this.userData.UsrId));
+                const responseData = await lastValueFrom(this.apiService.getIndividualDataService(idData?.mdlId, data[idData.primeId] ,this.userData.UsrId));
                 if(responseData['HistoryCommentsDetails']) {
                     const { Table, Table3, Table6, Table7, Table8, Table9 } = responseData['HistoryCommentsDetails'];
                     this.selectedDataFirstHalf = this.splitObject(Table[0], 0, Math.ceil(Object.keys(Table[0]).length / 2));
@@ -121,7 +150,8 @@ export class DetailsComponent implements OnInit, OnDestroy {
             } catch (error) {
                 console.error(error);
             } finally {
-                this.loading = !this.loading;
+                this.toggleLoadingState();
+                this.changeDetectorRef.detectChanges();
             }
         }
     }
@@ -135,4 +165,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
         return result;
     }
 
+    private toggleLoadingState() {
+        this.loading = !this.loading;
+    }
 }

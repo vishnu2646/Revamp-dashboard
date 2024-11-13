@@ -10,13 +10,13 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <mat-panel-title>
-                                <span>{{ option }}</span>
+                                <span [class.active]="option === selectedNav?.MdlType">{{ option }}</span>
                             </mat-panel-title>
                         </mat-expansion-panel-header>
                         <div>
                             <ul>
                                 @for (child of groupData[option.toString()]; track $index) {
-                                    <li (click)="handleNavigate(child)">
+                                    <li (click)="handleNavigate(child); drawer.toggle();" [class.active]="child.MdlDisplayname === selectedNav?.MdlDisplayname">
                                         {{ child.MdlDisplayname }}
                                     </li>
                                 }
@@ -30,10 +30,10 @@
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
-                        <mat-icon>person</mat-icon>
+                        <mat-icon>settings</mat-icon>
                     </mat-panel-title>
                     <mat-panel-description>
-                        <span>Admin</span>
+                        <span>Settings</span>
                     </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div>
@@ -42,10 +42,6 @@
                             <mat-icon>lock_reset</mat-icon>
                             <span>Change Password</span>
                         </li>
-                        <li (click)="handleLogout()">
-                            <mat-icon>logout</mat-icon>
-                            <span>Logout</span>
-                        </li>
                     </ul>
                 </div>
             </mat-expansion-panel>
@@ -53,9 +49,20 @@
     </mat-drawer>
     <mat-drawer-content>
         <div class="header">
-            <button type="button" mat-icon-button (click)="drawer.toggle()">
+            <button type="button" mat-icon-button color="primary" (click)="drawer.toggle()">
                 <mat-icon>menu</mat-icon>
             </button>
+            <div class="static-menus">
+                <span routerLink="/dashboard" routerLinkActive="true">Home</span>
+                <span routerLink="/dashboard" routerLinkActive="true">Adv Report</span>
+                <button type="button" color="primary" mat-button [matMenuTriggerFor]="loginMenu">
+                    <mat-icon>person</mat-icon>
+                    {{ userData.UsrName || 'Anonymous User' }}
+                </button>
+                <mat-menu #loginMenu="matMenu">
+                    <button mat-menu-item (click)="handleLogout()">Logout</button>
+                </mat-menu>
+            </div>
         </div>
         <router-outlet></router-outlet>
     </mat-drawer-content>

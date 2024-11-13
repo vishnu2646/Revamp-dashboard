@@ -36,6 +36,7 @@ export class ChangePasswordComponent {
         OldPassword: '',
         password: '',
         rePassword: '',
+        key: '',
     }
 
     public ngOnInit() {
@@ -46,7 +47,8 @@ export class ChangePasswordComponent {
         const data: IUser = this.userService.getCookieData() as IUser;
         if(data) {
             this.userData = data;
-            this.passwordInfo.username = this.userData.UsrName
+            this.passwordInfo.username = this.userData.UsrName;
+            this.passwordInfo.key = this.userData.key;
         }
     }
 
