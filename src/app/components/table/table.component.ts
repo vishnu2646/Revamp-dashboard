@@ -14,6 +14,9 @@ import { ModuleRightsService } from '../../services/module/module-rights.service
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IUser } from '../../types/types';
 import { isDefined } from '../../utils/utils';
+import * as XLSX from 'xlsx';
+import { MatMenuModule } from '@angular/material/menu';
+import { ExportService } from '../../services/export/export.service';
 
 @Component({
     selector: 'app-table',
@@ -25,6 +28,7 @@ import { isDefined } from '../../utils/utils';
         MatIconModule,
         MatButtonModule,
         LoaderComponent,
+        MatMenuModule
     ],
     templateUrl: './table.component.html',
     styleUrl: './table.component.scss'
@@ -41,6 +45,8 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
     private userService = inject(UserserviceService);
 
     private moduleRightsSerivice = inject(ModuleRightsService);
+
+    private exportSerivice = inject(ExportService);
 
     private filterSubscription: Subscription | null = null;
 
@@ -72,6 +78,8 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
     public userData: any;
 
     public daterange = '';
+
+    public totals: any;
 
     @Input()
     public isFilterApplied: boolean = false;
@@ -202,7 +210,13 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
         }
     }
 
-    public totals: any;
+    public handleExport(type: String) {
+        if(type === 'xlsx') {
+            this.exportSerivice.handleExportService('xlsx', this.tempData, this.displayedColumns, this.title)
+        } else if(type === 'csv') {
+            this.exportSerivice.handleExportService('csv', this.tempData, this.displayedColumns, this.title)
+        }
+    }
 
     private getTotals(data: any) {
         const values = data[0].IN_DisplayFormat.split('|');

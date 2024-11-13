@@ -22,9 +22,11 @@
         "@angular/router": "^17.3.0",
         "moment": "^2.30.1",
         "ngx-cookie-service": "^17.1.0",
+        "ngx-csv": "^0.3.2",
         "rxjs": "~7.8.0",
         "tslib": "^2.3.0",
         "uuid": "^11.0.2",
+        "xlsx": "^0.18.5",
         "xml2js": "^0.6.2",
         "zone.js": "~0.14.3"
     },

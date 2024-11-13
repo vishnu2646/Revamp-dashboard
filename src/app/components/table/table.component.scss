@@ -6,6 +6,11 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+
+        .head-action {
+            display: flex;
+            align-items: center;
+        }
     }
 
     .range {

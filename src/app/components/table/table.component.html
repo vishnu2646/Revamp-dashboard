@@ -1,6 +1,17 @@
 <div class="table-container">
     <div class="header">
-        <h2>{{ title || '' }}</h2>
+        <div class="head-action">
+            <h2>{{ title || '' }}</h2>
+            <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+                <mat-icon>
+                    download
+                </mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="handleExport('xlsx')">Export Excel</button>
+                <button mat-menu-item (click)="handleExport('csv')">Export CSV</button>
+            </mat-menu>
+        </div>
         <p>Total Data counts <b>{{ dataSource.data.length }}</b></p>
     </div>
     <div class="range" *ngIf="daterange.length > 0">
@@ -17,7 +28,7 @@
     <ng-template #tableTemplate>
         <ng-container *ngIf="dataSource.data.length > 0; else noDataTemplate">
             <div class="table-wrapper">
-                <table mat-table [dataSource]="dataSource">
+                <table mat-table [dataSource]="dataSource" id="table-data">
                     <!-- Dynamically generate columns -->
                     <ng-container *ngFor="let column of displayedColumns">
                         <ng-container [matColumnDef]="column">
