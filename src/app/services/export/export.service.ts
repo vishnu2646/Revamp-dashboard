@@ -7,6 +7,10 @@ import * as XLSX from 'xlsx';
 })
 export class ExportService {
 
+    public handleDownLoad() {
+        window.location.href='http://example.com/myuri/report?param=x';
+    }
+
     public handleExportService(type: String, tableBody: any, tableHead: String[], title: String) {
         const fileName = `${title}.xlsx`;
 
@@ -36,7 +40,7 @@ export class ExportService {
         XLSX.writeFile(wb, fileName);
     }
 
-    public writeCSV(data: any, fileName: String, header: String[]) {
+    private writeCSV(data: any, fileName: String, header: String[]) {
         const options = {
             fieldSeparator: ',',
             quoteStrings: '"',

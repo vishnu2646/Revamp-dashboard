@@ -43,3 +43,7 @@ export interface IReport {
     ReportFIle: String;
     ReportTitle: String;
 }
+
+export interface IReportDetails {
+    GetHtmlReportString: String;
+}

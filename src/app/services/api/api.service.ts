@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { UserserviceService } from '../user/userservice.service';
 import { ConfigService } from '../config/config.service';
 import { CookieService } from 'ngx-cookie-service';
+import { IReportDetails } from '../../types/types';
 
 @Injectable({
     providedIn: 'root'
@@ -32,5 +33,11 @@ export class ApiService {
     public getIndividualDataService(mdlId: String, id: number, usrId: number): Observable<any> {
         const key = sessionStorage.getItem('key');
         return this.httpClient.get(`${this.baseUrl}/GetIndividualData?MdlId=${mdlId}&ID=${id}&UserId=${usrId}&databaseKey=${key}`);
+    }
+
+    public getReportService(data: any): Observable<IReportDetails> {
+        const key = sessionStorage.getItem('key');
+        const { mdlId, user, primeId, filename } = data;
+        return this.httpClient.get<IReportDetails>(`${this.baseUrl}/GetHtmlReportString?_mdlid=${mdlId}&_User=${user}&_primeid=${primeId}&_FilterCondition=${primeId}&_LotId=0&_HTMLFileName=${filename}&databaseKey=${key}`);
     }
 }

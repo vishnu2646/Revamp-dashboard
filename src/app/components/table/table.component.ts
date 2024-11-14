@@ -14,7 +14,6 @@ import { ModuleRightsService } from '../../services/module/module-rights.service
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IUser } from '../../types/types';
 import { isDefined } from '../../utils/utils';
-import * as XLSX from 'xlsx';
 import { MatMenuModule } from '@angular/material/menu';
 import { ExportService } from '../../services/export/export.service';
 

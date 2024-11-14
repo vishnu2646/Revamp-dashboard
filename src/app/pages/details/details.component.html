@@ -12,9 +12,12 @@
                     <div class="header">
                         <h3>Details</h3>
                         <div class="icons">
-                            <button mat-icon-button color="accent" matTooltip="Report" matTooltipPosition="above" *ngIf="optionRights['Rights_Report'] === 1">
+                            <button mat-icon-button color="accent" [matMenuTriggerFor]="reportMenu" matTooltip="Report" matTooltipPosition="above" *ngIf="reportsData.length > 0">
                                 <mat-icon>print</mat-icon>
                             </button>
+                            <mat-menu #reportMenu="matMenu">
+                                <button mat-menu-item *ngFor="let report of reportsData" (click)="handleShowReport(report)">{{ report.ReportTitle }}</button>
+                            </mat-menu>
                             <button mat-icon-button color="primary" matTooltip="Comments" matTooltipPosition="above" (click)="handleToggleOptionsState('comment')" *ngIf="optionRights['Rights_Comment'] === 1" [matBadge]="commentsData.length">
                                 <mat-icon>comment</mat-icon>
                             </button>
@@ -23,6 +26,9 @@
                             </button>
                             <button mat-icon-button matTooltip="Edit" matTooltipPosition="above" color="warn" (click)="handleEditRouter('Edit')">
                                 <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button matTooltip="Edit" matTooltipPosition="above" color="warn" (click)="handleToggleOptionsState('attachment')" >
+                                <mat-icon>attachment</mat-icon>
                             </button>
                         </div>
                     </div>
@@ -45,9 +51,6 @@
                 <mat-card-footer>
                     <h3>Actions</h3>
                     <div class="icons">
-                        <button mat-icon-button color="accent" matTooltip="Report" matTooltipPosition="above" *ngIf="optionRights['Rights_Report'] === 1">
-                            <mat-icon>print</mat-icon>
-                        </button>
                         <button mat-icon-button color="primary" matTooltip="Comment" matTooltipPosition="above" (click)="handleToggleOptionsState('comment')" *ngIf="optionRights['Rights_Comment'] === 1" [matBadge]="commentsData.length">
                             <mat-icon>comment</mat-icon>
                         </button>
@@ -123,6 +126,27 @@
                     <ng-template #noCommentTemplate>
                         <p>No Comments to Display</p>
                     </ng-template>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <div class="attachments" *ngIf="toggleOptionsState.attachment">
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Attachments</mat-card-title>
+                    <mat-card-subtitle>Title</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <table class="attachments-table">
+                        <tr *ngFor="let attachment of attachmentsData">
+                            <th>{{ attachment.PrimeId }}</th>
+                            <td>
+                                <!-- <a [href]="attachment.FilePath" download>Download</a> -->
+                                <!-- <a href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" download>Download</a> -->
+                                <a href="https://file-examples.com/wp-content/storage/2017/02/file_example_XLS_10.xls" download>Download</a>
+                            </td>
+                        </tr>
+                    </table>
                 </mat-card-content>
             </mat-card>
         </div>

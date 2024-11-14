@@ -13,6 +13,12 @@
             flex-direction: column;
             justify-content: space-between;
 
+            .icons {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
             mat-card-header {
                 .header {
                     display: flex;
@@ -80,6 +86,18 @@
             td, th {
                 border: 1px solid #ccc;
                 padding: 10px;
+            }
+        }
+    }
+
+    .attachments {
+        margin-top: 20px;
+
+        .attachments-table {
+            tr {
+                td {
+                    font-size: 14px;
+                }
             }
         }
     }
