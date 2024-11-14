@@ -37,6 +37,8 @@ export interface IAttachments {
     Filecount: String;
     Mdlid: String;
     PrimeId: String;
+    DisplayFileName: String;
+    RefFilePath: String;
 }
 
 export interface IReport {

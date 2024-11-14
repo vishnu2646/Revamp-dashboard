@@ -16,6 +16,7 @@
             .icons {
                 display: flex;
                 align-items: center;
+                flex-wrap: wrap;
                 gap: 20px;
             }
 
@@ -38,13 +39,19 @@
             .details {
                 border-collapse: collapse;
 
+                tr {
+                    &:nth-child(even) {
+                        background-color: #edecec9c;
+                    }
+                }
+
                 td {
                     padding: 10px;
                     border: 1px solid #ddd;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
-                    max-width: 130px;
+                    max-width: 200px;
                 }
             }
 
@@ -81,11 +88,45 @@
     .comments-details {
         margin-top: 20px;
 
+        mat-card-title {
+            margin-bottom: 10px;
+        }
+
         .comments {
-            border-collapse: collapse;
-            td, th {
-                border: 1px solid #ccc;
-                padding: 10px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+
+            .comment-head {
+                display: flex;
+                align-items: flex-start;
+                gap: 20px;
+
+                mat-icon {
+                    font-size: 40px;
+                    height: 40px;
+                    width: 40px;
+                }
+
+                .comment_head_details {
+                    .commented_by, .comment_date {
+                        margin: 0;
+                    }
+
+                    .commented_by {
+                        font-size: 16px;
+                        color: #9a9898;
+                    }
+
+                    .comment_date {
+                        font-size: 12px;
+                    }
+                }
+            }
+
+            .comment-content {
+                cursor: context-menu;
+                padding: 5px;
+                margin-top: 5px;
             }
         }
     }
@@ -97,6 +138,11 @@
             tr {
                 td {
                     font-size: 14px;
+
+                    a {
+                        text-decoration: none;
+                        color: greenyellow;
+                    }
                 }
             }
         }

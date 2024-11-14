@@ -182,7 +182,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
         if(this.recivedData) {
             try {
                 const responseData = await lastValueFrom(this.apiService.getIndividualDataService(idData?.mdlId, data[idData.primeId] ,this.userData.UsrId));
-                console.log(responseData['HistoryCommentsDetails']);
                 if(responseData['HistoryCommentsDetails']) {
                     const { Table, Table3, Table6, Table7, Table8, Table9 } = responseData['HistoryCommentsDetails'];
                     this.selectedDataFirstHalf = this.splitObject(Table[0], 0, Math.ceil(Object.keys(Table[0]).length / 2));
@@ -190,7 +189,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
                     this.optionRights = Table3[0];
                     this.reportsData = Table6;
                     this.historyData = Table7;
+                    console.log(Table8);
                     this.attachmentsData = Table8;
+
                     this.commentsData = Table9;
                 }
             } catch (error) {
