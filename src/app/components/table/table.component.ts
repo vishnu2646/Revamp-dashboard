@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, inject, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, inject, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ApiService } from '../../services/api/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { lastValueFrom, Subscription } from 'rxjs';
+import { distinctUntilChanged, lastValueFrom, Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { LoaderComponent } from "../loader/loader.component";
 import moment from 'moment';
@@ -16,6 +16,7 @@ import { IUser } from '../../types/types';
 import { isDefined } from '../../utils/utils';
 import { MatMenuModule } from '@angular/material/menu';
 import { ExportService } from '../../services/export/export.service';
+import { FilterPipe } from "../../pipes/filter/filter.pipe";
 
 @Component({
     selector: 'app-table',
@@ -27,12 +28,12 @@ import { ExportService } from '../../services/export/export.service';
         MatIconModule,
         MatButtonModule,
         LoaderComponent,
-        MatMenuModule
+        MatMenuModule,
     ],
     templateUrl: './table.component.html',
     styleUrl: './table.component.scss'
 })
-export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class TableComponent implements OnInit, OnChanges, OnDestroy {
     private  apiService = inject(ApiService);
 
     private activatedRoute = inject(ActivatedRoute);
@@ -56,6 +57,8 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
         primeId: ''
     }
 
+    private tableConfigs: { [key: string]: String } = {}
+
     private typeStr: String = '';
 
     public title: String = '';
@@ -68,8 +71,6 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
 
     public tempData: any[] = [];
 
-    public filterValue: String = '';
-
     public visiblityRights: any;
 
     public dateFilter: String = '';
@@ -79,6 +80,9 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
     public daterange = '';
 
     public totals: any;
+
+    @Input()
+    public filterValue: String = '';
 
     @Input()
     public isFilterApplied: boolean = false;
@@ -95,8 +99,9 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
     public ngOnInit(): void {
         this.handleGetUserData();
 
-        this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe(params => {
-            this.filterValue = params['filter'];
+        this.queryParamsSubscription = this.activatedRoute.queryParams.pipe(
+            distinctUntilChanged((prev, curr) => prev['module'] === curr['module'])
+        ).subscribe(params => {
             this.module = params['module'];
             if(isDefined(this.module)) {
                 this.handleGetMenuExplorerData(this.module)
@@ -111,16 +116,16 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
         });
     }
 
-    public ngAfterViewInit(): void {
-        if(this.filterValue) {
-            this.dataSource.filter = this.filterValue.trim().toLowerCase();
-            this.filterApplied.emit(true);
-        }
-    }
-
     public ngOnChanges(simpleChanges: SimpleChanges): void {
+        if(simpleChanges['filterValue']?.currentValue) {
+            this.dataSource.filter = simpleChanges['filterValue']?.currentValue;
+            this.getTotals();
+        }
+
         if(simpleChanges['isFilterApplied']?.currentValue) {
             this.isFilterApplied = simpleChanges['isFilterApplied']?.currentValue;
+            this.getTotals();
+
         } else {
             this.isFilterApplied = false;
             this.dataSource.data = [...this.tempData];
@@ -149,11 +154,11 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
             const responseData = await this.fetchMenuExplorerData(module);
             if (this.isValidResponse(responseData)) {
                 if(responseData['CheckMenuExplr'].Table1.length > 0) {
-                    this.processTable1Data(responseData['CheckMenuExplr'].Table1);
+                    this.processTable1Data(responseData['CheckMenuExplr'].Table1[0]);
                 }
                 this.processTableData(responseData['CheckMenuExplr'].Table);
                 this.processTableRights(responseData['CheckMenuExplr'].Table1[0]);
-                this.getTotals(responseData['CheckMenuExplr'].Table1);
+                this.getTotals();
 
                 this.processTable3Data(responseData['CheckMenuExplr'].Table3[0])
                 this.updatePaginator();
@@ -172,10 +177,17 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
         this.router.navigateByUrl('/dashboard/details', { state: { idData: this.detailsData, data: row, title: this.title, typeStr: this.typeStr } });
     }
 
+    public handleExport(type: String) {
+        if(type === 'xlsx') {
+            this.exportSerivice.handleExportService('xlsx', this.tempData, this.displayedColumns, this.title)
+        } else if(type === 'csv') {
+            this.exportSerivice.handleExportService('csv', this.tempData, this.displayedColumns, this.title)
+        }
+    }
+
     private filterByDate(fromDate: any, toDate: any): void {
         const startDate = new Date(fromDate);
         const endDate = new Date(toDate);
-
         const filteredData = this.dataSource.data.filter((item: any) => {
             const itemDate = new Date(item[this.dateFilter.toString()]);
             return itemDate >= startDate && itemDate <= endDate;
@@ -198,27 +210,19 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
         return responseData && responseData['CheckMenuExplr'] && responseData['CheckMenuExplr'].Table.length > 0;
     }
 
-    public processTable1Data(data: any) {
-        const explorer = data[0];
-        this.visiblityRights = explorer.IN_IsExplrNeed.split('|');
-        this.title = explorer.IN_TitleStr;
-        this.typeStr = explorer.IN_TypeStr;
+    private processTable1Data(data: any) {
+        this.tableConfigs = data;
+        this.visiblityRights = this.tableConfigs['IN_IsExplrNeed'].split('|');
+        this.title = this.tableConfigs['IN_TitleStr'];
+        this.typeStr = this.tableConfigs['IN_TypeStr;']
         this.detailsData = {
             mdlId: this.module.toString(),
-            primeId: explorer.IN_PrimdId
+            primeId: this.tableConfigs['IN_PrimdId'].toString(),
         }
     }
 
-    public handleExport(type: String) {
-        if(type === 'xlsx') {
-            this.exportSerivice.handleExportService('xlsx', this.tempData, this.displayedColumns, this.title)
-        } else if(type === 'csv') {
-            this.exportSerivice.handleExportService('csv', this.tempData, this.displayedColumns, this.title)
-        }
-    }
-
-    private getTotals(data: any) {
-        const values = data[0].IN_DisplayFormat.split('|');
+    private getTotals() {
+        const values = this.tableConfigs['IN_DisplayFormat'].split('|');
         const arr: String[] = [];
 
         for(let i = 0; i < values.length; i++) {
@@ -232,7 +236,7 @@ export class TableComponent implements OnInit, OnChanges, AfterViewInit, OnDestr
             return acc;
         }, {});
 
-        this.dataSource.data.forEach(item => {
+        this.dataSource.filteredData.forEach(item => {
             arr.forEach((col: String) => {
                 if(item[col.toString()] !== undefined) {
                     totals[col.toString()] += item[col.toString()];

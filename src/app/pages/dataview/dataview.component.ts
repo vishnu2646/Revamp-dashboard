@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,8 +13,6 @@ import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IUser } from '../../types/types';
 import { FormsModule } from '@angular/forms';
-// import { DateFilterService } from '../../services/filter/date-filter.service';
-// import moment from 'moment';
 import { TableComponent } from '../../components/table/table.component';
 import { ModuleRightsService } from '../../services/module/module-rights.service';
 import { Subscription } from 'rxjs';
@@ -44,11 +42,7 @@ export class DataviewComponent implements OnInit, OnDestroy {
 
     private userService = inject(UserserviceService);
 
-    private router = inject(Router);
-
     private rightsService = inject(ModuleRightsService);
-
-    private cd = inject(ChangeDetectorRef);
 
     private dateFilterSubscription: Subscription | undefined;
 
@@ -81,8 +75,6 @@ export class DataviewComponent implements OnInit, OnDestroy {
 
         this.dateFilterSubscription = this.rightsService.dateFilters$.subscribe((value: String) => {
             this.dateFilterField = value;
-            // console.log(this.dateFilterField);
-            // this.cd.detectChanges();
         });
     }
 
@@ -105,12 +97,7 @@ export class DataviewComponent implements OnInit, OnDestroy {
         const input = document.getElementById('search') as HTMLInputElement;
         if (!input.value) {
             this.isExpanded = false;
-        } else {
-            if(this.filterValue) {
-                this.updateUrlWithFilter();
-            } else {
-                this.filterValue = '';
-            }
+            this.filterValue = '';
         }
     }
 
@@ -121,7 +108,7 @@ export class DataviewComponent implements OnInit, OnDestroy {
     }
 
     public handleFilterApplied(event: boolean) {
-        console.log(event);
+        this.isFilterApplied = true;
     }
 
     public handleGetUserData(): void {
@@ -132,25 +119,11 @@ export class DataviewComponent implements OnInit, OnDestroy {
     }
 
     public openFilterSheet(): void {
-        this.isFilterApplied = true;
         this._bottomSheet.open(BottomSheetComponent);
     }
 
     public handleFilterValue(event: Event) {
         const element = event.target as HTMLInputElement;
         this.filterValue = element.value;
-    }
-
-    private updateUrlWithFilter(): void {
-
-        const currentParams = { ...this.activatedRoute.snapshot.queryParams };
-
-        currentParams['filter'] = this.filterValue;
-
-        this.router.navigate([], {
-            relativeTo: this.activatedRoute,
-            queryParams: currentParams,
-            queryParamsHandling: 'merge',
-        });
     }
 }

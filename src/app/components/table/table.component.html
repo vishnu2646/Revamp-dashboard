@@ -12,7 +12,7 @@
                 <button mat-menu-item (click)="handleExport('csv')">Export CSV</button>
             </mat-menu>
         </div>
-        <p>Total Data counts <b>{{ dataSource.data.length }}</b></p>
+        <p>Total Data counts <b>{{ dataSource.filteredData.length }}</b></p>
     </div>
     <div class="range" *ngIf="daterange.length > 0">
         <span>{{ daterange }}</span>

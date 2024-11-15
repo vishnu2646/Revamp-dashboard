@@ -19,7 +19,7 @@
                         <mat-icon (click)="openFilterSheet()" *ngIf="dateFilterField">
                             filter_alt
                         </mat-icon>
-                        <mat-icon *ngIf="isFilterApplied || filterValue.length" (click)="handleClearFilters()">
+                        <mat-icon *ngIf="isFilterApplied || filterValue.length > 0" (click)="handleClearFilters()">
                             close
                         </mat-icon>
                     </div>
@@ -37,6 +37,7 @@
                         [module]="module"
                         [isFilterApplied]="isFilterApplied"
                         (filterApplied)="handleFilterApplied($event)"
+                        [filterValue]="filterValue"
                     ></app-table>
                 </mat-tab>
                 <!-- Note: Enable it if needed in future for the addional tabs -->
