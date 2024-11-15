@@ -120,6 +120,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
         if(simpleChanges['filterValue']?.currentValue) {
             this.dataSource.filter = simpleChanges['filterValue']?.currentValue;
             this.getTotals();
+        } else {
+            this.dataSource.filter = '';
         }
 
         if(simpleChanges['isFilterApplied']?.currentValue) {
@@ -222,6 +224,11 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private getTotals() {
+
+        if(this.filterValue.length === 0) {
+            this.dataSource.filteredData = [...this.tempData];
+        }
+
         const values = this.tableConfigs['IN_DisplayFormat'].split('|');
         const arr: String[] = [];
 
@@ -241,7 +248,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
                 if(item[col.toString()] !== undefined) {
                     totals[col.toString()] += item[col.toString()];
                 }
-            })
+            });
         });
 
         this.totals = totals;
