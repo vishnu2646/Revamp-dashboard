@@ -49,3 +49,20 @@ export interface IReport {
 export interface IReportDetails {
     GetHtmlReportString: String;
 }
+
+export interface IActivity {
+    Module: String;
+    Username: String;
+    actiontime: String;
+    actionType: String;
+    mdlid: String;
+    primeid: String;
+    activitydesc: String;
+    fileurl: String;
+}
+
+export interface IRecentActivity {
+    GetRecentActivity: {
+        Table: IActivity[];
+    }
+}

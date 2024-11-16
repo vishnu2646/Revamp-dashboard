@@ -1,0 +1,36 @@
+.recent-activity-wrapper {
+    padding: 20px;
+
+    &.isRoute {
+        margin-top: 50px;
+    }
+
+    .titles {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        p {
+            font-size: 14px;
+            color: #525D80;
+            margin: 0;
+            cursor: pointer;
+        }
+    }
+
+    .table-wrapper {
+        position: relative;
+        min-height: 200px;
+        max-height: 400px;
+        overflow: auto;
+
+        table {
+            td, th {
+                overflow: hidden;
+                max-width: 150px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    }
+}

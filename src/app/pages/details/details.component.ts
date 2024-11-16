@@ -97,7 +97,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        // Make sure to unsubscribe when the component is destroyed
         if (this.seletcedDataSubscription) {
             this.seletcedDataSubscription.unsubscribe();
         }
@@ -117,10 +116,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
             attachment: false,
         };
         this.toggleOptionsState[option as keyof typeof this.toggleOptionsState] = !this.toggleOptionsState[option as keyof typeof this.toggleOptionsState];
-    }
-
-    public handleDownload() {
-        // this.exportService.handleDownLoad()
     }
 
     public parseDate(dateStr: String): Date {
@@ -148,9 +143,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
     public async handleShowReport(report: IReport): Promise<void> {
         const { idData, data } = this.recivedData;
         const params = {
-            mdlId: idData.mdlId,
+            mdlId: this.recivedData.mdlid || idData.mdlId,
             user: this.userData.UsrName,
-            primeId: data[idData.primeId],
+            primeId: this.recivedData.primeid || data[idData.primeId],
             filename: report.ReportTitle
         }
         try {
@@ -175,24 +170,24 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
 
     private async getIndividualDetails(): Promise<void> {
-        const { idData, data, title, typeStr } = this.recivedData;
-        this.title = title;
+        const { idData, data, typeStr } = this.recivedData;
         this.typeStr = typeStr
         this.loading = !this.loading;
+        const primeId = this.recivedData.primeid || data[idData.primeId];
+        const mdlId =  this.recivedData.mdlid || idData?.mdlId;
         if(this.recivedData) {
             try {
-                const responseData = await lastValueFrom(this.apiService.getIndividualDataService(idData?.mdlId, data[idData.primeId] ,this.userData.UsrId));
+                const responseData = await lastValueFrom(this.apiService.getIndividualDataService(mdlId, primeId ,this.userData.UsrId));
                 if(responseData['HistoryCommentsDetails']) {
-                    const { Table, Table3, Table6, Table7, Table8, Table9 } = responseData['HistoryCommentsDetails'];
+                    const { Table, Table3, Table6, Table7, Table8, Table9, Table10 } = responseData['HistoryCommentsDetails'];
                     this.selectedDataFirstHalf = this.splitObject(Table[0], 0, Math.ceil(Object.keys(Table[0]).length / 2));
                     this.selectedDataSecondHalf = this.splitObject(Table[0], Math.ceil(Object.keys(Table[0]).length / 2), Object.keys(Table[0]).length);
                     this.optionRights = Table3[0];
                     this.reportsData = Table6;
                     this.historyData = Table7;
-                    console.log(Table8);
                     this.attachmentsData = Table8;
-
                     this.commentsData = Table9;
+                    this.title = Table10[0].TitleStr
                 }
             } catch (error) {
                 console.error(error);

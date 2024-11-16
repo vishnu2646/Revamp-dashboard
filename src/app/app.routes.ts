@@ -1,20 +1,21 @@
 import { Routes } from '@angular/router';
 import { PagesComponent } from './pages/pages.component';
-import { AttachmentsComponent } from './pages/attachments/attachments.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AuthComponent } from './auth/auth.component';
 import { LoginComponent } from './auth/login/login.component';
 import { DataviewComponent } from './pages/dataview/dataview.component';
 import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 import { ChangePasswordComponent } from './auth/change-password/change-password.component';
-import { authGuard } from './guard/auth.guard';
+import { authGuard } from './guard/auth/auth.guard';
 import { DetailsComponent } from './pages/details/details.component';
+import { ActivitesComponent } from './pages/activites/activites.component';
+import { sessionGuard } from './guard/session/session.guard';
+import { OnBoardingComponent } from './on-boarding/on-boarding.component';
 
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'auth/login',
-        pathMatch: 'full',
+        component: OnBoardingComponent
     },
     {
         path: 'auth',
@@ -22,7 +23,8 @@ export const routes: Routes = [
         children: [
             {
                 path: 'login',
-                component: LoginComponent
+                component: LoginComponent,
+                canActivate: [sessionGuard]
             },
             {
                 path:'reset-password',
@@ -38,7 +40,7 @@ export const routes: Routes = [
     {
         path: 'dashboard',
         component: PagesComponent,
-        canActivate: [authGuard],
+        canActivate: [authGuard, sessionGuard],
         children: [
             {
                 path: '',
@@ -54,12 +56,12 @@ export const routes: Routes = [
                 path: 'details',
                 component: DetailsComponent,
                 canActivate: [authGuard]
+            },
+            {
+                path: 'activites',
+                component: ActivitesComponent,
+                canActivate: [authGuard]
             }
         ]
     },
-    {
-        path: 'attachments',
-        component: AttachmentsComponent,
-        canActivate: [authGuard]
-    }
 ];

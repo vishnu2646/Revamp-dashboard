@@ -1,0 +1,45 @@
+<section class="recent-activity-wrapper" [class.isRoute]="!isChild">
+    <div class="titles">
+        <h2>Recent Activites</h2>
+        <p (click)="handleNativateActivity()">For More Details >></p>
+    </div>
+    <ng-container *ngIf="isLoadingResults; else tableTemplate">
+        <app-loader></app-loader>
+    </ng-container>
+    <ng-template #tableTemplate>
+        <ng-container *ngIf="dataSource.data.length; else noDataTemplate">
+            <div class="table-wrapper">
+                <table mat-table [dataSource]="dataSource" id="table-data">
+
+                    <!-- Dynamically Generated Columns -->
+                    <ng-container *ngFor="let column of displayColumns; let i = index">
+                        <ng-container [matColumnDef]="column">
+                            <th mat-header-cell *matHeaderCellDef> {{ column | titlecase }} </th>
+                            @if(column === 'Links') {
+                                <td mat-cell *matCellDef="let element" (click)="handleViewDetails(element)">
+                                    <span style="cursor: pointer;">View Details</span>
+                                </td>
+                            } @else {
+                                <td mat-cell *matCellDef="let element"> {{ element[column] }} </td>
+                            }
+                        </ng-container>
+                    </ng-container>
+
+                    <!-- Header and Row Definitions -->
+                    <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayColumns;"></tr>
+                </table>
+            </div>
+        </ng-container>
+        <ng-template #noDataTemplate>
+            <div class="no-data">
+                <p>No data to display</p>
+            </div>
+        </ng-template>
+    </ng-template>
+</section>
+<mat-paginator
+    [length]="dataSource.data.length"
+    [pageSize]="10"
+    [pageSizeOptions]="[5, 10, 20, 50, 100]">
+</mat-paginator>

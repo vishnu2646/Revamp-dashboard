@@ -262,6 +262,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
         this.displayedColumns = columns.filter((_column, index) => {
             return this.visiblityRights[index] === '1' || this.visiblityRights[index] === ' ';
         });
+
+
     }
 
     private processTableRights(data: any) {

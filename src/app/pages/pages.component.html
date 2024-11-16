@@ -16,7 +16,7 @@
                         <div>
                             <ul>
                                 @for (child of groupData[option.toString()]; track $index) {
-                                    <li (click)="handleNavigate(child); drawer.toggle();" [class.active]="child.MdlDisplayname === selectedNav?.MdlDisplayname">
+                                    <li (click)="handleNavigate(child, false); drawer.toggle();" [class.active]="child.MdlDisplayname === selectedNav?.MdlDisplayname">
                                         {{ child.MdlDisplayname }}
                                     </li>
                                 }
@@ -60,6 +60,7 @@
                     {{ userData.UsrName || 'Anonymous User' }}
                 </button>
                 <mat-menu #loginMenu="matMenu">
+                    <button mat-menu-item (click)="handleNavigate({}, true)">Recent Activity</button>
                     <button mat-menu-item (click)="handleLogout()">Logout</button>
                 </mat-menu>
             </div>

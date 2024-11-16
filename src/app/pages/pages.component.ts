@@ -84,16 +84,19 @@ export class PagesComponent implements OnInit {
         }
     }
 
-    public handleNavigate(data: any) {
+    public handleNavigate(data: any, isActivity: boolean): void {
         sessionStorage.setItem('route', JSON.stringify(data));
         this.selectedNav = data;
-        this.router.navigate(['/dashboard/data-viewer'], { queryParams: { module: data?.MdlId } })
+        if (isActivity) {
+            this.router.navigate(['/dashboard/activites'], { queryParams: { module: 'all', activity: 'activity' } })
+        } else {
+            this.router.navigate(['/dashboard/data-viewer'], { queryParams: { module: data?.MdlId } })
+        }
     }
 
     public handleLogout() {
         this.userService.logoutService(this.userData.logid, this.userData.UsrId);
-        sessionStorage.clear();
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/']);
     }
 
     private toggleLoadingState() {

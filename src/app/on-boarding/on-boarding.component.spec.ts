@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AttachmentsComponent } from './attachments.component';
+import { OnBoardingComponent } from './on-boarding.component';
 
-describe('AttachmentsComponent', () => {
-  let component: AttachmentsComponent;
-  let fixture: ComponentFixture<AttachmentsComponent>;
+describe('OnBoardingComponent', () => {
+  let component: OnBoardingComponent;
+  let fixture: ComponentFixture<OnBoardingComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AttachmentsComponent]
+      imports: [OnBoardingComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(AttachmentsComponent);
+    fixture = TestBed.createComponent(OnBoardingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

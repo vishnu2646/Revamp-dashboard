@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserserviceService } from '../user/userservice.service';
-import { ConfigService } from '../config/config.service';
-import { CookieService } from 'ngx-cookie-service';
-import { IReportDetails } from '../../types/types';
+// import { ConfigService } from '../config/config.service';
+import { IRecentActivity, IReportDetails } from '../../types/types';
 
 @Injectable({
     providedIn: 'root'
@@ -14,9 +12,7 @@ export class ApiService {
 
     private httpClient = inject(HttpClient);
 
-    private userService = inject(UserserviceService);
-
-    private configService = inject(ConfigService);
+    // private configService = inject(ConfigService);
 
     private baseUrl = 'http://rx2025apiservice.revampapps.com';
 
@@ -39,5 +35,11 @@ export class ApiService {
         const key = sessionStorage.getItem('key');
         const { mdlId, user, primeId, filename } = data;
         return this.httpClient.get<IReportDetails>(`${this.baseUrl}/GetHtmlReportString?_mdlid=${mdlId}&_User=${user}&_primeid=${primeId}&_FilterCondition=${primeId}&_LotId=0&_HTMLFileName=${filename}&databaseKey=${key}`);
+    }
+
+    public getRecentActivityService(data: any): Observable<IRecentActivity> {
+        const key = sessionStorage.getItem('key');
+        const { mdlId, user, fromDate, toDate, actionType } = data;
+        return this.httpClient.get<IRecentActivity>(`${this.baseUrl}/GetRecentActivity?MdlId=${mdlId}&User=${user}&FromDate=${fromDate}&ToDate=${toDate}&ActionType=${actionType}&databaseKey=${key}`);
     }
 }

@@ -4,12 +4,6 @@
         <mat-card>
             <mat-card-content>
                 <div class="actions">
-                    <div class="search" [ngClass]="{'expanded': isExpanded}" (click)="toggleSearchField()">
-                        <input class="search-input" type="text" name="search" id="search" autocomplete="off" (input)="handleFilterValue($event)"  (focusout)="closeSearchField()">
-                        <div class="search-icon">
-                            <mat-icon>search</mat-icon>
-                        </div>
-                    </div>
 
                     <!-- {{ optionsRights | json }} -->
                     <div class="icons">
@@ -23,15 +17,22 @@
                             close
                         </mat-icon>
                     </div>
+
+                    <div class="search" [ngClass]="{'expanded': isExpanded}" (click)="toggleSearchField()" *ngIf="!isChild">
+                        <input class="search-input" type="text" name="search" id="search" autocomplete="off" (input)="handleFilterValue($event)"  (focusout)="closeSearchField()">
+                        <div class="search-icon">
+                            <mat-icon>search</mat-icon>
+                        </div>
+                    </div>
                 </div>
             </mat-card-content>
         </mat-card>
         <!-- tabs -->
         <main class="contents">
-            <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="end">
+            <mat-tab-group [selectedIndex]="tabIndex" mat-stretch-tabs="false" mat-align-tabs="end" (selectedTabChange)="handleTabChange($event)">
                 <mat-tab>
                     <ng-template mat-tab-label>
-                        <mat-icon>list_view</mat-icon>
+                        <mat-icon (click)="isChild = !isChild">list_view</mat-icon>
                     </ng-template>
                     <app-table
                         [module]="module"
@@ -40,13 +41,12 @@
                         [filterValue]="filterValue"
                     ></app-table>
                 </mat-tab>
-                <!-- Note: Enable it if needed in future for the addional tabs -->
-                <!-- <mat-tab>
+                <mat-tab>
                     <ng-template mat-tab-label>
-                        <mat-icon>grid_view</mat-icon>
+                        <mat-icon (click)="handleTabRecentActions()">grid_view</mat-icon>
                     </ng-template>
-                    test
-                </mat-tab> -->
+                    <app-activites [isChild]="isChild"></app-activites>
+                </mat-tab>
             </mat-tab-group>
         </main>
     </div>

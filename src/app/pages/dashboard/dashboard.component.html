@@ -46,8 +46,8 @@
                     <div class="user-img">
                         <img src="../../../assets/avatar.png" alt="">
                     </div>
-                    <p>Admin</p>
-                    <span>dummy&#x40;gmail.com</span>
+                    <p>{{ userData.UsrName }}</p>
+                    <span>{{ userData.UserEmail }}</span>
                 </mat-card-content>
                 <mat-divider></mat-divider>
                 <mat-card-footer>
@@ -55,9 +55,11 @@
                         <mat-icon>
                             phone
                         </mat-icon>
-                        Contact
+                        <a [href]="userData.UserMobNum">
+                            Contact
+                        </a>
                     </button>
-                    <button mat-button color="warn">
+                    <button mat-button color="warn" (click)="handleMail()">
                         <mat-icon>
                             mail
                         </mat-icon>
