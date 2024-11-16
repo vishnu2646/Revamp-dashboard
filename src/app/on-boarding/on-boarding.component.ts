@@ -29,8 +29,7 @@ export class OnBoardingComponent {
     public key: String = '';
 
     public handleSetDatabaseKey (): void {
-        const keys = ['GASMAIN', 'TRIALSPFL', 'TRADEDEMO', 'GASDEMO'];
-        if(keys.includes(this.key.toString())) {
+        if(this.key.length > 5) {
             sessionStorage.setItem('key', this.key.toString());
             this.router.navigate(['/auth/login']);
         } else {
