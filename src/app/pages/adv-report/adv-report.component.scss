@@ -1,0 +1,32 @@
+.report-section {
+    padding: 20px;
+    margin-top: 65px;
+
+    .report-form-field {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        mat-card {
+            width: 50%;
+            margin-bottom: 20px;
+
+            mat-card-content {
+                mat-form-field {
+                    width: 100%;
+                    margin-top: 10px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 560px) {
+    .report-section {
+        .report-form-field {
+            mat-card {
+                width: 100%;
+            }
+        }
+    }
+}

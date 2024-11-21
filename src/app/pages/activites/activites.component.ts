@@ -8,6 +8,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { LoaderComponent } from "../../components/loader/loader.component";
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
     selector: 'app-activites',
@@ -17,7 +19,9 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
         RouterModule,
         MatTableModule,
         LoaderComponent,
-        MatPaginatorModule
+        MatPaginatorModule,
+        FormsModule,
+        MatInputModule
     ],
     templateUrl: './activites.component.html',
     styleUrl: './activites.component.scss'
@@ -50,11 +54,18 @@ export class ActivitesComponent {
     @Input()
     public isChild: boolean = false;
 
+    public toggleFilter: boolean = false;
+
     constructor() {
         this.activatedRoute.queryParams.subscribe(params => {
             this.module = params['module'];
             this.activity = params['activity'];
         });
+
+        if(this.router.url.includes("activites")) {
+            this.toggleFilter = !this.toggleFilter;
+        }
+
         if(this.activity) {
             this.handleGetUserData();
             this.handleGetActivityData();
@@ -98,6 +109,11 @@ export class ActivitesComponent {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    public applyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = filterValue.trim().toLowerCase();
     }
 
     public handleViewDetails(activity: any) {

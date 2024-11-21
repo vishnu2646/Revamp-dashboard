@@ -8,6 +8,10 @@
     </ng-container>
     <ng-template #tableTemplate>
         <ng-container *ngIf="dataSource.data.length; else noDataTemplate">
+            <mat-form-field appearance="outline" *ngIf="toggleFilter">
+                <mat-label>Filter</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="Filter Recent Activites" #input>
+            </mat-form-field>
             <div class="table-wrapper">
                 <table mat-table [dataSource]="dataSource" id="table-data">
 

@@ -16,8 +16,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { ApiService } from '../../services/api/api.service';
 import { LoaderComponent } from "../../components/loader/loader.component";
-import { RouteService } from '../../services/route/route.service';
-import { ExportService } from '../../services/export/export.service';
 import { IAttachments, IComments, IHistory, IReport, IUser } from '../../types/types';
 
 @Component({
@@ -45,10 +43,6 @@ export class DetailsComponent implements OnInit, OnDestroy {
     private userService = inject(UserserviceService);
 
     private apiService = inject(ApiService);
-
-    private exportService = inject(ExportService);
-
-    private routerService = inject(RouteService);
 
     private seletcedDataSubscription: Subscription | undefined;
 
@@ -78,13 +72,18 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
     public optionRights: {[x:string]: 0 | 1} = {};
 
+    public printContent: any;
+
+    public excelReports: any;
+
+    public excelRptLoading = false;
+
     public toggleOptionsState = {
         comment: false,
         history: false,
         attachment: false,
+        dynamicReports: false,
     }
-
-    public printContent: any;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
@@ -110,10 +109,12 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
 
     public handleToggleOptionsState(option: string) {
+
         this.toggleOptionsState = {
             comment: false,
             history: false,
             attachment: false,
+            dynamicReports: false
         };
         this.toggleOptionsState[option as keyof typeof this.toggleOptionsState] = !this.toggleOptionsState[option as keyof typeof this.toggleOptionsState];
     }
@@ -142,24 +143,57 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
     public async handleShowReport(report: IReport): Promise<void> {
         const { idData, data } = this.recivedData;
-        const params = {
-            mdlId: this.recivedData.mdlid || idData.mdlId,
-            user: this.userData.UsrName,
-            primeId: this.recivedData.primeid || data[idData.primeId],
-            filename: report.ReportTitle
-        }
-        try {
-            this.apiService.getReportService(params).subscribe((data: any) => {
-                const parsedData = data.GetHtmlReportString
-                const byPasedData = this.sanitizer.bypassSecurityTrustHtml(parsedData);
-                this.printContent = byPasedData;
-                if(this.printContent) {
-                    this.handlePrint();
+
+        if(report.ExcelOutput) {
+            const params = {
+                titleStr: this.typeStr,
+                primeId: this.recivedData.primeid || data[idData.primeId],
+                mdlId: this.recivedData.mdlid || idData.mdlId,
+                user: this.userData.UsrName,
+                htmlRpt: report.ReportTitle,
+                filterCondition: this.recivedData.primeid || data[idData.primeId]
+            }
+            this.excelRptLoading = !this.excelRptLoading;
+            try {
+                const responseData: any = await lastValueFrom(this.apiService.getExcelReportGenerateService(params));
+                if(responseData && responseData['GetExcelDocument1']) {
+                    this.excelReports = responseData['GetExcelDocument1'].Table[0];
                 }
-            })
-        } catch (error) {
-            console.log('error:', error)
+            } catch (error) {
+                console.log(error);
+            }
+            this.excelRptLoading = !this.excelRptLoading;
+            this.handleToggleOptionsState('dynamicReports');
+        } else {
+            const params = {
+                mdlId: this.recivedData.mdlid || idData.mdlId,
+                user: this.userData.UsrName,
+                primeId: this.recivedData.primeid || data[idData.primeId],
+                filename: report.ReportTitle
+            }
+            try {
+                this.apiService.getReportService(params).subscribe((data: any) => {
+                    const parsedData = data.GetHtmlReportString
+                    const byPasedData = this.sanitizer.bypassSecurityTrustHtml(parsedData);
+                    this.printContent = byPasedData;
+                    if(this.printContent) {
+                        this.handlePrint();
+                    }
+                })
+            } catch (error) {
+                console.log('error:', error)
+            }
         }
+    }
+
+    public handleDownloadFile(type: 'pdf' | 'excel' ) {
+        let path;
+        if(type === 'pdf') {
+            path = this.excelReports.RevPDFPath;
+        } else if(type === 'excel') {
+            path = this.excelReports.RevXlPath
+        }
+        window.open(path, 'download');
     }
 
     public handlePrint() {

@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+
+import { Subscription } from 'rxjs';
 
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,16 +12,13 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabChangeEvent, MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 
-import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet.component';
-import { UserserviceService } from '../../services/user/userservice.service';
-import { IActivity, IRecentActivity, IUser } from '../../types/types';
-import { FormsModule } from '@angular/forms';
-import { TableComponent } from '../../components/table/table.component';
-import { ModuleRightsService } from '../../services/module/module-rights.service';
-import { lastValueFrom, Subscription } from 'rxjs';
 import { ApiService } from '../../services/api/api.service';
-import moment from 'moment';
+import { UserserviceService } from '../../services/user/userservice.service';
+import { ModuleRightsService } from '../../services/module/module-rights.service';
+import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet.component';
+import { TableComponent } from '../../components/table/table.component';
 import { ActivitesComponent } from "../activites/activites.component";
+import { IActivity, IUser } from '../../types/types';
 
 @Component({
     selector: 'app-dataview',

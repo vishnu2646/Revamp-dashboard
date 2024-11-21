@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, Inject, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
@@ -8,8 +10,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { DateAdapter } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
-import moment from 'moment';
+
 import { DateFilterService } from '../../services/filter/date-filter.service';
 
 @Component({

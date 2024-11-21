@@ -13,12 +13,12 @@
                 <div class="otp-forms">
                     <mat-form-field appearance="outline">
                         <mat-label>OTP</mat-label>
-                        <input matInput type="password" placeholder="Enter Username">
+                        <input matInput type="password" [(ngModel)]="otp" placeholder="Enter Username">
                     </mat-form-field>
                     <mat-checkbox color="primary">Remember Me</mat-checkbox>
                     <br />
                     <br />
-                    <button mat-raised-button color="primary" class="login-btn" (click)="handleVerifyOtp()">Submit</button>
+                    <button mat-raised-button color="primary" class="login-btn">Submit</button>
                 </div>
             } @else {
                 <div class="user-forms">

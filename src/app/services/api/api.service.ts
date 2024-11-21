@@ -14,7 +14,9 @@ export class ApiService {
 
     // private configService = inject(ConfigService);
 
-    private baseUrl = 'http://rx2025apiservice.revampapps.com';
+    // private baseUrl = 'http://rx2025apiservice.revampapps.com';
+
+    private baseUrl = 'https://rmpapi.iworkx.in';
 
     public getMenuService(id: number): Observable<any> {
         const key = sessionStorage.getItem('key');
@@ -41,5 +43,32 @@ export class ApiService {
         const key = sessionStorage.getItem('key');
         const { mdlId, user, fromDate, toDate, actionType } = data;
         return this.httpClient.get<IRecentActivity>(`${this.baseUrl}/GetRecentActivity?MdlId=${mdlId}&User=${user}&FromDate=${fromDate}&ToDate=${toDate}&ActionType=${actionType}&databaseKey=${key}`);
+    }
+
+    public getReportData(username: String) {
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/GetGenFn?User=${username}&databaseKey=${key}`)
+    }
+
+    public getReportFieldsData(username: String, id: number, Sid: String="sasi"): Observable<any> {
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/GetRefreshFn?User=${username}&databaseKey=${key}&Rptid=${id}&SessId=${Sid}`);
+    }
+
+    public getReportGenerateData(data: any): any {
+        const { User, Rptid, SessId, ProcName, formData, UserParamList  } = data;
+        const key = sessionStorage.getItem('key');
+
+        const rawJsonString = `User=${User}&Rptid=${Rptid}&SessId=${SessId}&ProcName=${ProcName}&Paramandvalues=${formData}&UserParamList=${UserParamList}`;
+        const encodedJsonString = (rawJsonString);
+        // const url = `${this.baseUrl}/CreateCallId?User=${User}&databaseKey=${key}&Rptid=${Rptid}&SessId=${SessId}&procName=${ProcName}&Paramandvalues=${formData}&mdlid=AdvanceRmpReportSetup_PrjCls&UserParamList=${UserParamList}`;
+        const url = `${this.baseUrl}/CreateCallId?JsonString=${encodedJsonString}&databaseKey=${key}`;
+        return this.httpClient.get(url);
+    }
+
+    public getExcelReportGenerateService(data: any) {
+        const { titleStr, primeId, mdlId, user, htmlRpt, filterCondition } = data;
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/GetExcelDocument1?TitleStr=${titleStr}&PrimeIdStr=${primeId}&MdlId=${mdlId}&User=${user}&HTMLRpt=${htmlRpt}&FilterCondition=${filterCondition}&databaseKey=${key}`)
     }
 }

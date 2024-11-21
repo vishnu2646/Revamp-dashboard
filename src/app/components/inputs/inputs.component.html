@@ -1,0 +1,29 @@
+<section class="generate-inputs">
+    <div *ngFor="let field of inputFields">
+        <div class="input" [ngSwitch]="field.ControlType">
+            <mat-form-field *ngSwitchCase="'Dropdown'" appearance="outline">
+                <mat-label>{{ field.ParamTitle }}</mat-label>
+                <mat-select (selectionChange)="updatedSelectedOption($event)" [(ngModel)]="formData[field.ParamName]">
+                    @for (option of field.options; track option._id) {
+                        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngSwitchCase="'TextBox'" appearance="outline">
+                <mat-label>{{ field.ParamTitle }}</mat-label>
+                <input matInput type="text" placeholder="Enter value" [(ngModel)]="formData[field.ParamName]">
+            </mat-form-field>
+            <mat-form-field *ngSwitchCase="'Number'" appearance="outline">
+                <mat-label>{{ field.ParamTitle }}</mat-label>
+                <input matInput type="number" placeholder="Enter value" [(ngModel)]="formData[field.ParamName]">
+            </mat-form-field>
+            <mat-form-field *ngSwitchCase="'DateTime'" appearance="outline">
+                <mat-label>{{ field.ParamTitle }}</mat-label>
+                <input matInput [matDatepicker]="picker" [(ngModel)]="formData[field.ParamName]">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
+    <button mat-raised-button color="accent" (click)="submitData()">Submit</button>
+</section>

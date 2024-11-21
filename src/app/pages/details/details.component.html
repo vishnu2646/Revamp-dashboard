@@ -17,6 +17,7 @@
                             </button>
                             <mat-menu #reportMenu="matMenu">
                                 <button mat-menu-item *ngFor="let report of reportsData" (click)="handleShowReport(report)">
+                                    <mat-icon>{{ report.Icon }}</mat-icon>
                                     {{ report.ReportTitle }}
                                 </button>
                             </mat-menu>
@@ -50,26 +51,6 @@
                         </tr>
                     </table>
                 </mat-card-content>
-                <mat-card-footer>
-                    <h3>Actions</h3>
-                    <div class="icons">
-                        <button mat-icon-button color="accent" [matMenuTriggerFor]="reportMenu" matTooltip="Report" matTooltipPosition="above" [matBadge]="reportsData.length" *ngIf="reportsData.length > 0">
-                            <mat-icon>print</mat-icon>
-                        </button>
-                        <button mat-icon-button color="primary" matTooltip="Comment" matTooltipPosition="above" (click)="handleToggleOptionsState('comment')" *ngIf="optionRights['Rights_Comment'] === 1" [matBadge]="commentsData.length">
-                            <mat-icon>comment</mat-icon>
-                        </button>
-                        <button mat-icon-button matTooltip="History" matTooltipPosition="above" (click)="handleToggleOptionsState('history')" *ngIf="optionRights['Right_History'] === 1" [matBadge]="historyData.length">
-                            <mat-icon>history</mat-icon>
-                        </button>
-                        <button mat-icon-button color="warn" matTooltip="Edit" matTooltipPosition="above">
-                            <mat-icon>edit</mat-icon>
-                        </button>
-                        <button mat-icon-button matTooltip="Attachments" matTooltipPosition="above" color="warn" (click)="handleToggleOptionsState('attachment')" [matBadge]="attachmentsData.length" *ngIf="optionRights['Rights_Attachement'] === 1">
-                            <mat-icon>attachment</mat-icon>
-                        </button>
-                    </div>
-                </mat-card-footer>
             </mat-card>
         </div>
 
@@ -149,5 +130,25 @@
                 </mat-card-content>
             </mat-card>
         </div>
+
+        <ng-container *ngIf="excelRptLoading; else excelRptTemplate">
+            <app-loader></app-loader>
+        </ng-container>
+        <ng-template #excelRptTemplate>
+            <div class="reports" *ngIf="toggleOptionsState.dynamicReports">
+                <mat-card>
+                    <mat-card-header>
+                        <mat-card-title>Reports</mat-card-title>
+                        <mat-card-subtitle>
+                            Pdf and Excel reports
+                        </mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <button mat-raised-button color="primary" style="margin-right: 10px;" (click)="handleDownloadFile('pdf')">{{ excelReports?.ReportTitle }} PDF</button>
+                        <button mat-raised-button color="accent" (click)="handleDownloadFile('excel')">{{ excelReports?.ReportTitle }} EXCEL</button>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </ng-template>
     </ng-template>
 </section>

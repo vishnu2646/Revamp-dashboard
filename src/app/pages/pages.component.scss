@@ -71,11 +71,25 @@
             justify-content: space-between;
             gap: 20px;
 
+            .header-action {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+
+                p {
+                    margin: 0;
+                }
+            }
+
             .static-menus {
                 display: flex;
                 align-items: center;
                 gap: 20px;
                 justify-content: flex-end;
+
+                span {
+                    cursor: context-menu;
+                }
             }
         }
     }

@@ -13,6 +13,7 @@ import { IMAGE_CONFIG } from '@angular/common';
 import { IpserviceService } from '../../services/ipService/ipservice.service';
 import { IUser, IUserInfo } from '../../types/types';
 import { LoaderComponent } from '../../components/loader/loader.component';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-login',
@@ -47,6 +48,8 @@ export class LoginComponent {
 
     private ipService = inject(IpserviceService);
 
+    private dataToCookie: any;
+
     public toggleOTPfield: boolean = false;
 
     public isLoading = false;
@@ -60,37 +63,49 @@ export class LoginComponent {
         ComId: 'GRANT000000000000001',
     }
 
+    public otp: String = '';
+
     public ngOnInit() {
-        const data: IUser | string = this.userService.getCookieData() as IUser | string;
-        if(data !== "No cookie data") {
-            this.router.navigate(['/dashboard']);
-        }
+        // const data: IUser | string = this.userService.getCookieData() as IUser | string;
+        // if(data !== "No cookie data") {
+        //     // this.router.navigate(['/dashboard']);
+        //     console.log(data);
+        // }
         const sessionId = uuidv4();
         this.user.SessionId = sessionId;
         this.handleUpdateIpAddress();
     }
 
-    public handleToggleOtpField() {
-        this.toggleOTPfield = !this.toggleOTPfield;
-    }
+    // public async handleVerifyOtp() {
+    //     const data = {
+    //         otp: this.otp,
+    //         logId: this.dataToCookie.logid
+    //     };
 
-    public handleVerifyOtp() {
-        this.router.navigate(['dashboard']);
-    }
+    //     try {
+    //         const responseData = await lastValueFrom(this.userService.verifyOtpService(data))
+    //         if(responseData) {
+    //             alert(responseData.message);
+    //         }
+    //         this.userService.setCookie(this.dataToCookie);
+    //         this.router.navigate(['/dashboard']);
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
     public async handleLogin() {
         this.isLoading = !this.isLoading;
         try {
             const repsonseData: any = await lastValueFrom(this.userService.loginService(this.user));
             if(repsonseData && repsonseData['GetLoginApi']) {
-                const dataToCookie = repsonseData['GetLoginApi'].Table[0]
-                dataToCookie['sessionId'] = this.user.SessionId;
-                this.userService.setCookie(dataToCookie);
+                this.dataToCookie = repsonseData['GetLoginApi'].Table[0]
+                this.dataToCookie['sessionId'] = this.user.SessionId;
+                this.userService.setCookie(this.dataToCookie);
                 this.router.navigate(['/dashboard']);
             }
         } catch (error) {
             console.log(error);
-            this.router.navigate(['/auth/login']);
         } finally {
             this.isLoading = !this.isLoading;
         }

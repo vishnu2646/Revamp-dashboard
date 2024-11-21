@@ -1,0 +1,23 @@
+.generate-inputs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+@media (max-width: 560px) {
+    .generate-inputs  {
+        gap: 10px;
+
+        div {
+            width: 100%;
+            .inputs {
+                width: 100%;
+            }
+        }
+        mat-form-field.mat-mdc-form-field {
+            width: 100% !important;
+        }
+    }
+}

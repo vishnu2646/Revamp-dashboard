@@ -11,12 +11,18 @@ import { IUser, IUserInfo } from '../../types/types';
 export class UserserviceService {
     private http = inject(HttpClient);
 
-    private baseUrl = 'http://rx2025apiservice.revampapps.com';
+    // private baseUrl = 'http://rx2025apiservice.revampapps.com';
+
+    private baseUrl = 'https://rmpapi.iworkx.in';
 
     private cookieService = inject(CookieService);
 
     public setCookie(data: IUser): void {
-        this.cookieService.set('user', JSON.stringify(data), { path: '/' });
+        // 3 days Calculation.
+        const expires = new Date();
+        expires.setSeconds(expires.getSeconds() + 3 * 24 * 60 * 60);
+
+        this.cookieService.set('user', JSON.stringify(data), { path: '/', expires: expires });
     }
 
     public getCookieData(): any {
@@ -31,14 +37,19 @@ export class UserserviceService {
     }
 
     public logoutService(id: number, userId: number): void {
-        this.cookieService.delete('user', '/');
         this.handleLogout(id, userId);
     }
 
-    public loginService(data: any): Observable<IUserInfo> {
+    public loginService(data: any): Observable<any> {
         const key = sessionStorage.getItem('key');
         const { UsrName, UsrPwd, ComCode, SessionId, IPAddress, ComId } = data;
         return this.http.get(`${this.baseUrl}/LoginApi?UsrName=${UsrName}&UsrPwd=${UsrPwd}&ComCode=${ComCode}&SessionId=${SessionId}&IPAddress=${IPAddress}&ComId=${ComId}&databaseKey=${key}`) as Observable<IUserInfo>;
+    }
+
+    public verifyOtpService(data: any): Observable<any> {
+        const key = sessionStorage.getItem('key');
+        const { otp, logId } = data;
+        return this.http.get(`${this.baseUrl}/VerifyLogin?AuthCode=${otp}&LogId=${logId}&databaseKey=${key}`)
     }
 
     public getUserInfoService(userName: String, password: String, email: String): Observable<Object> {
@@ -55,6 +66,5 @@ export class UserserviceService {
     private handleLogout(id: number, userId: number) {
         const key = sessionStorage.getItem('key');
         this.http.get(`${this.baseUrl}/LogoutApi?LogId=${id}&UserId=${userId}&LogOutTime=null&databaseKey=${key}`)
-        sessionStorage.clear();
     }
 }

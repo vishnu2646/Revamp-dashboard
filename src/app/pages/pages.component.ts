@@ -13,6 +13,7 @@ import { groupData } from '../utils/utils';
 import { LoaderComponent } from "../components/loader/loader.component";
 import { RouteService } from '../services/route/route.service';
 import { CommonModule } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-pages',
@@ -25,7 +26,8 @@ import { CommonModule } from '@angular/common';
         MatIconModule,
         MatExpansionModule,
         LoaderComponent,
-        MatMenuModule
+        MatMenuModule,
+        MatTooltipModule
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './pages.component.html',
@@ -95,8 +97,9 @@ export class PagesComponent implements OnInit {
     }
 
     public handleLogout() {
+        const key = sessionStorage.getItem('key');
+        this.router.navigate(['/'], { queryParams: { key: key } });
         this.userService.logoutService(this.userData.logid, this.userData.UsrId);
-        this.router.navigate(['/']);
     }
 
     private toggleLoadingState() {

@@ -1,22 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, inject, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, inject, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { ApiService } from '../../services/api/api.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { distinctUntilChanged, lastValueFrom, Subscription } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
-import { LoaderComponent } from "../loader/loader.component";
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatMenuModule } from '@angular/material/menu';
+
 import moment from 'moment';
+import { distinctUntilChanged, lastValueFrom, Subscription } from 'rxjs';
+
+import { ApiService } from '../../services/api/api.service';
+import { ExportService } from '../../services/export/export.service';
 import { DateFilterService } from '../../services/filter/date-filter.service';
 import { ModuleRightsService } from '../../services/module/module-rights.service';
 import { UserserviceService } from '../../services/user/userservice.service';
+
+import { LoaderComponent } from "../loader/loader.component";
+
 import { IUser } from '../../types/types';
 import { isDefined } from '../../utils/utils';
-import { MatMenuModule } from '@angular/material/menu';
-import { ExportService } from '../../services/export/export.service';
-import { FilterPipe } from "../../pipes/filter/filter.pipe";
 
 @Component({
     selector: 'app-table',
@@ -29,6 +35,8 @@ import { FilterPipe } from "../../pipes/filter/filter.pipe";
         MatButtonModule,
         LoaderComponent,
         MatMenuModule,
+        ClipboardModule,
+        MatSortModule
     ],
     templateUrl: './table.component.html',
     styleUrl: './table.component.scss'
@@ -90,11 +98,14 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
     @Input()
     public module: String = '';
 
+    @Output()
+    public filterApplied = new EventEmitter<boolean>();
+
     @ViewChild(MatPaginator)
     public paginator!: MatPaginator;
 
-    @Output()
-    public filterApplied = new EventEmitter<boolean>();
+    @ViewChild(MatSort)
+    public sort!: MatSort;
 
     public ngOnInit(): void {
         this.handleGetUserData();
@@ -174,7 +185,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    public handleGetDetail(row: any) {
+    public handleGetDetail(event: Event, row: any) {
         this.moduleRightsSerivice.setSelectedData(row);
         this.router.navigateByUrl('/dashboard/details', { state: { idData: this.detailsData, data: row, title: this.title, typeStr: this.typeStr } });
     }
@@ -216,7 +227,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
         this.tableConfigs = data;
         this.visiblityRights = this.tableConfigs['IN_IsExplrNeed'].split('|');
         this.title = this.tableConfigs['IN_TitleStr'];
-        this.typeStr = this.tableConfigs['IN_TypeStr;']
+        console.log(this.tableConfigs);
+        this.typeStr = this.tableConfigs['IN_TypeStr']
         this.detailsData = {
             mdlId: this.module.toString(),
             primeId: this.tableConfigs['IN_PrimdId'].toString(),
@@ -237,6 +249,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
                 arr.push(this.displayedColumns[i]);
             }
         };
+
+        console.log(arr);
 
         const totals = arr.reduce((acc: any, column: String) => {
             acc[column.toString()] = 0;
@@ -277,6 +291,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
 
     private updatePaginator(): void {
         this.dataSource.paginator = this.paginator;
+        const interval = setInterval(() => {
+            clearTimeout(interval);
+            this.dataSource.sort = this.sort
+        },0);
     }
 
     private resetData() {

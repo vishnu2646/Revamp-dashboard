@@ -11,6 +11,7 @@ import { DetailsComponent } from './pages/details/details.component';
 import { ActivitesComponent } from './pages/activites/activites.component';
 import { sessionGuard } from './guard/session/session.guard';
 import { OnBoardingComponent } from './on-boarding/on-boarding.component';
+import { AdvReportComponent } from './pages/adv-report/adv-report.component';
 
 export const routes: Routes = [
     {
@@ -60,6 +61,11 @@ export const routes: Routes = [
             {
                 path: 'activites',
                 component: ActivitesComponent,
+                canActivate: [authGuard]
+            },
+            {
+                path: 'advance-report',
+                component: AdvReportComponent,
                 canActivate: [authGuard]
             }
         ]

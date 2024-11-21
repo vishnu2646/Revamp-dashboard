@@ -1,7 +1,7 @@
 
 <mat-drawer-container class="container">
     <mat-drawer mode="over" #drawer>
-        <h2>Gas Agency</h2>
+        <h2>{{ userData.ComName }}</h2>
         @if(isMenuLoading) {
             <app-loader></app-loader>
         } @else {
@@ -38,9 +38,13 @@
                 </mat-expansion-panel-header>
                 <div>
                     <ul>
-                        <li routerLink="/auth/change-password">
+                        <li routerLink="/auth/change-password" routerLinkActive="true">
                             <mat-icon>lock_reset</mat-icon>
                             <span>Change Password</span>
+                        </li>
+                        <li routerLink="/dashboard/advance-report" routerLinkActive="true">
+                            <mat-icon>summarize</mat-icon>
+                            <span>Advance Report</span>
                         </li>
                     </ul>
                 </div>
@@ -49,17 +53,23 @@
     </mat-drawer>
     <mat-drawer-content>
         <div class="header">
-            <button type="button" mat-icon-button color="primary" (click)="drawer.toggle()">
-                <mat-icon>menu</mat-icon>
-            </button>
+            <div class="header-action">
+                <button type="button" mat-icon-button color="primary" (click)="drawer.toggle()">
+                    <mat-icon>menu</mat-icon>
+                </button>
+                <p routerLink="/dashboard" routerLinkActive="true">{{ userData.ComName }}</p>
+            </div>
+
             <div class="static-menus">
-                <span routerLink="/dashboard" routerLinkActive="true">Home</span>
-                <span routerLink="/dashboard" routerLinkActive="true">Adv Report</span>
+                <button mat-icon-button  #tooltip="matTooltip" matTooltip="Advance RMP Report" matTooltipPosition="above">
+                    <mat-icon>summarize</mat-icon>
+                </button>
                 <button type="button" color="primary" mat-button [matMenuTriggerFor]="loginMenu">
                     <mat-icon>person</mat-icon>
                     {{ userData.UsrName || 'Anonymous User' }}
                 </button>
                 <mat-menu #loginMenu="matMenu">
+                    <button mat-menu-item routerLink="/dashboard/advance-report" routerLinkActive="true">Advance Report</button>
                     <button mat-menu-item (click)="handleNavigate({}, true)">Recent Activity</button>
                     <button mat-menu-item (click)="handleLogout()">Logout</button>
                 </mat-menu>

@@ -1,4 +1,3 @@
-
 export interface IUser {
     UsrId: number,
     UsrName: String
@@ -42,8 +41,10 @@ export interface IAttachments {
 }
 
 export interface IReport {
+    Icon: String;
     ReportFIle: String;
     ReportTitle: String;
+    ExcelOutput: String;
 }
 
 export interface IReportDetails {
@@ -64,5 +65,23 @@ export interface IActivity {
 export interface IRecentActivity {
     GetRecentActivity: {
         Table: IActivity[];
+    }
+}
+
+export interface IReport {
+    Rptid: number;
+    ProceName: String;
+    Reportname: String;
+    RptGroup: String;
+}
+
+export interface IReportGroup {
+    RptGroup: String;
+}
+
+export interface IAdvRmpRptGenData {
+    AdvRmpRptGenData: {
+        Table: IReport[];
+        Table1: IReportGroup[]
     }
 }
