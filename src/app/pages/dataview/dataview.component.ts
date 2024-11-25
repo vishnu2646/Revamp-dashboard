@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
@@ -97,6 +97,16 @@ export class DataviewComponent implements OnInit, OnDestroy {
 
         this.dateFilterSubscription = this.rightsService.dateFilters$.subscribe((value: String) => {
             this.dateFilterField = value;
+        });
+    }
+
+    public ngAfterViewInit(): void {
+        this.router.events.subscribe((event) => {
+            if(event instanceof NavigationStart) {
+                const input = document.getElementById('search') as HTMLInputElement;
+                input.value = '';
+                this.closeSearchField();
+            }
         });
     }
 

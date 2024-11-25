@@ -1,19 +1,20 @@
 import { Component, signal, ChangeDetectionStrategy, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+
+import { lastValueFrom } from 'rxjs';
+
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { UserserviceService } from '../services/user/userservice.service';
-import { IUser } from '../types/types';
-import { ApiService } from '../services/api/api.service';
-import { lastValueFrom } from 'rxjs';
-import { groupData } from '../utils/utils';
-import { LoaderComponent } from "../components/loader/loader.component";
-import { RouteService } from '../services/route/route.service';
-import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
+
+import { LoaderComponent } from "../components/loader/loader.component";
+import { UserserviceService } from '../services/user/userservice.service';
+import { ApiService } from '../services/api/api.service';
+import { groupData } from '../utils/utils';
 
 @Component({
     selector: 'app-pages',
@@ -39,8 +40,6 @@ export class PagesComponent implements OnInit {
     private userService = inject(UserserviceService);
 
     private apiService = inject(ApiService);
-
-    private routerService = inject(RouteService);
 
     public readonly panelOpenState = signal(false);
 
@@ -89,10 +88,15 @@ export class PagesComponent implements OnInit {
     public handleNavigate(data: any, isActivity: boolean): void {
         sessionStorage.setItem('route', JSON.stringify(data));
         this.selectedNav = data;
+
         if (isActivity) {
             this.router.navigate(['/dashboard/activites'], { queryParams: { module: 'all', activity: 'activity' } })
         } else {
-            this.router.navigate(['/dashboard/data-viewer'], { queryParams: { module: data?.MdlId } })
+            if(data?.MdlId === "AdvanceRmpReportSetup_PrjCls") {
+                this.router.navigate(['/dashboard/advance-report']);
+            } else {
+                this.router.navigate(['/dashboard/data-viewer'], { queryParams: { module: data?.MdlId } })
+            }
         }
     }
 

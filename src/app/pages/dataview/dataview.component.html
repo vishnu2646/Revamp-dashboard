@@ -19,7 +19,7 @@
                     </div>
 
                     <div class="search" [ngClass]="{'expanded': isExpanded}" (click)="toggleSearchField()" *ngIf="!isChild">
-                        <input class="search-input" type="text" name="search" id="search" autocomplete="off" (input)="handleFilterValue($event)"  (focusout)="closeSearchField()">
+                        <input class="search-input" type="text" name="search" id="search" autocomplete="off" (input)="handleFilterValue($event)" (focusout)="closeSearchField()">
                         <div class="search-icon">
                             <mat-icon>search</mat-icon>
                         </div>
