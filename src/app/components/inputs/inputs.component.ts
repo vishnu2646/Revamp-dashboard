@@ -12,6 +12,11 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { LoaderComponent } from '../loader/loader.component';
+import { HttpClient } from '@angular/common/http';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
     selector: 'app-inputs',
@@ -23,7 +28,11 @@ import { MatButtonModule } from '@angular/material/button';
         MatSelectModule,
         MatDatepickerModule,
         MatFormFieldModule,
-        MatButtonModule
+        MatButtonModule,
+        MatCardModule,
+        LoaderComponent,
+        MatTableModule,
+        MatTabsModule
     ],
     providers: [provideNativeDateAdapter()],
     templateUrl: './inputs.component.html',
@@ -38,9 +47,21 @@ export class InputsComponent implements OnInit, OnChanges {
 
     private _selectedReport: IReport = {} as IReport;
 
+    public tableCount = 0;
+
     public formData: { [key: string]: String } = {};
 
-    public inputFieldsWithOptions: any[] = []
+    public inputFieldsWithOptions: any[] = [];
+
+    public isReportLoading = false;
+
+    public advanceReport: any;
+
+    public tablesToGenerate: any[] = [];
+
+    public data: any;
+
+    private httpClient = inject(HttpClient);
 
     @Input()
     public report: IReport = {} as IReport;
@@ -49,6 +70,8 @@ export class InputsComponent implements OnInit, OnChanges {
         { ParamName: 'startDate', ControlType: 'DateTime', ParamTitle: 'Start Date', defaultValue: new Date() },
         { ParamName: 'endDate', ControlType: 'DateTime', ParamTitle: 'End Date', defaultValue: new Date() },
     ];
+
+    private excludeTables = ['Table', 'Table1', 'Table2'];
 
     public ngOnInit(): void {
         this.handleGetUserData();
@@ -80,33 +103,32 @@ export class InputsComponent implements OnInit, OnChanges {
                 });
                 const mapedData = mapRelatedTable(responseData.GetRefreshData);
                 this.inputFieldsWithOptions = mapedData as any[];
-                console.log(this.inputFields);
             } catch (error) {
                 console.log(error);
             }
         }
     }
 
-    public updatedSelectedOption(event: MatSelectChange) {
-        console.log(event);
-    }
-
     public async submitData() {
-        console.log(this.formData);
         if(this._selectedReport && this.userData && this.formData) {
             let requestData;
             if(this.formData instanceof Object) {
                 const formData = Object.entries(this.formData).map(([key, value]) => {
                     if(value && typeof value === 'object' && 'label' in value && 'value' in value) {
-                        return `${key}=${value.value}`;
+                        return `${key}='${value.value}'`;
                     } else if(value instanceof Date) {
                         const formatedDate = this.formatDate(value);
                         return `${key}=${formatedDate}`;
                     }  else {
-                        return `${key}=${value}`;
+                        return `${key}='${value}'`;
                     }
                 });
-                console.log(formData);
+                const username = this.userData.UsrName;
+                const session = this.userData.sessionId;
+
+                formData.push(`@UsrName='${username}'`);
+                formData.push(`@SessId='${session}'`);
+
                 const commmaSeparated = formData.join(',');
                 const slashSeparated = formData.join('/').replace(/@/g, '');
 
@@ -115,8 +137,9 @@ export class InputsComponent implements OnInit, OnChanges {
                     Rptid: this._selectedReport['Rptid'],
                     SessId: this.userData.sessionId,
                     ProcName: this._selectedReport['ProceName'],
-                    formData: commmaSeparated,
-                    UserParamList: slashSeparated
+                    Paramandvalues: commmaSeparated,
+                    mdlid: "AdvanceRmpReportSetup_PrjCls",
+                    UserParamList: "select" + slashSeparated
                 }
             } else {
                 requestData = {
@@ -124,51 +147,72 @@ export class InputsComponent implements OnInit, OnChanges {
                     Rptid: this._selectedReport['Rptid'],
                     SessId: this.userData.sessionId,
                     ProcName: this._selectedReport['ProceName'],
-                    formData: this.formData,
-                    UserParamList: this.formData
+                    Paramandvalues: this.formData,
+                    mdlid: "AdvanceRmpReportSetup_PrjCls",
+                    UserParamList: "select " + this.formData
                 }
             }
 
-            console.log(requestData);
-
             try {
-                // this.isReportLoading = true;
+                this.isReportLoading = !this.isReportLoading;
                 const response: any = await lastValueFrom(this.apiService.getReportGenerateData(requestData) as any)
                 if(response) {
-                    // this.isReportLoading = false;
+                    const { Table, Table1 } = response.GetCallId
+                    const { MdlId, ReportTitle } = Table1[0];
+
                     const printData = {
+                        pimeidStr: Table[0].CallId,
+                        mdlId: MdlId,
                         userName: this.userData.UsrName,
-                        callId: response.body.GetGenerateData.Table[0].CallId,
-                        rptId: this._selectedReport['Rptid'],
-                        rptName: String(this._selectedReport['Reportname'])
+                        htmlRpt: ReportTitle,
                     }
 
-                    console.log(printData);
-
-                    // this.printDataService.setPrintData(printData);
-                    // this.router.navigate(['/home/details']);
-                    // try {
-                    //     this.isPrintDataLoading = true;
-                    //     const printDataResponse = await lastValueFrom(this.apiService.getPrintData(printData.userName, printData.dataBaseKey, printData.rptId, printData.callId, printData.rptName))
-                    //     this.isPrintDataLoading = false;
-                    //     this.printResponseData = printDataResponse;
-                    //     this.isPrintDataVisible = true;
-
-                    // } catch (err) {
-                    //     console.log(err);
-                    // }
+                    try {
+                        const responseData: any = await lastValueFrom(this.apiService.getAdvanceReportExcelGenerateService(printData));
+                        if(responseData && responseData.GetExcelDocument) {
+                            const { Table, Table2 } = responseData.GetExcelDocument;
+                            this.advanceReport = Table[0];
+                            this.tableCount = Table2.length;
+                            this.generateTables(responseData);
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
             } catch (error) {
                 console.error(error);
-                // this.loading = false;
             }
+            this.isReportLoading = !this.isReportLoading;
         }
+    }
+
+    private generateTables(data: any) {
+        const tablesFromData = Object.entries(data.GetExcelDocument)
+            .filter(([key]) => !this.excludeTables.includes(key))
+            .map(([key, value]) => {
+                const tableData = Array.isArray(value) ? value : [];
+                const columns = tableData.length ? Object.keys(tableData[0]) : [];
+                return { tableName: key, data: tableData, columns };
+            });
+
+        this.tablesToGenerate = tablesFromData;
+        console.log(`Generating`, this.tablesToGenerate);
+    }
+
+    public handleDownloadFile(type: 'pdf' | 'excel'): void {
+        let path;
+        if(type === 'pdf') {
+            path = this.advanceReport.RevPDFPath;
+        } else if(type === 'excel') {
+            path = this.advanceReport.RevXlPath
+        }
+        window.open(path, 'download');
     }
 
     private formatDate(date: any): string {
         const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
-        return `${year}${month}${day}`;
+        return `'${year}${month}${day}'`;
     }
 }

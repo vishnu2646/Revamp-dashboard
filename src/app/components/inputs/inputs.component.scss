@@ -6,6 +6,15 @@
     gap: 20px;
 }
 
+mat-tab-group {
+    margin-top: 20px;
+
+    .table-wrapper {
+        max-height: 600px;
+        overflow-y: scroll;
+    }
+}
+
 @media (max-width: 560px) {
     .generate-inputs  {
         gap: 10px;

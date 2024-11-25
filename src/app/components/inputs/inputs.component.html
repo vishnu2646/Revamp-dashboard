@@ -3,7 +3,7 @@
         <div class="input" [ngSwitch]="field.ControlType">
             <mat-form-field *ngSwitchCase="'Dropdown'" appearance="outline">
                 <mat-label>{{ field.ParamTitle }}</mat-label>
-                <mat-select (selectionChange)="updatedSelectedOption($event)" [(ngModel)]="formData[field.ParamName]">
+                <mat-select [(ngModel)]="formData[field.ParamName]">
                     @for (option of field.options; track option._id) {
                         <mat-option [value]="option.value">{{ option.label }}</mat-option>
                     }
@@ -27,3 +27,46 @@
     </div>
     <button mat-raised-button color="accent" (click)="submitData()">Submit</button>
 </section>
+<ng-container *ngIf="!advanceReport && isReportLoading; else reportTemplate">
+    <app-loader></app-loader>
+</ng-container>
+<ng-template #reportTemplate>
+    <div class="reports" *ngIf="advanceReport">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Reports</mat-card-title>
+                <mat-card-subtitle>
+                    Pdf and Excel reports
+                </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <button mat-raised-button color="primary" style="margin-right: 10px;" (click)="handleDownloadFile('pdf')">{{ advanceReport?.ReportTitle }} PDF</button>
+                <button mat-raised-button color="accent" (click)="handleDownloadFile('excel')">{{ advanceReport?.ReportTitle }} EXCEL</button>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab *ngFor="let table of tablesToGenerate" [label]="table.tableName">
+            <div class="table-wrapper">
+                <h3>{{ table.tableName }}</h3>
+                <ng-container *ngIf="table.data.length !== 0; else noDataTemplate">
+                    <table mat-table [dataSource]="table.data" style="margin-top: 20px;">
+
+                        <!-- Dynamically Create Columns -->
+                        <ng-container *ngFor="let column of table.columns" [matColumnDef]="column">
+                            <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
+                            <td mat-cell *matCellDef="let element">{{ element[column] }}</td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="table.columns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: table.columns;"></tr>
+                    </table>
+                </ng-container>
+                <ng-template #noDataTemplate>
+                    <p>No Data to display</p>
+                </ng-template>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</ng-template>
+
