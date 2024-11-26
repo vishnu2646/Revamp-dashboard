@@ -12,15 +12,21 @@ export class ApiService {
 
     private httpClient = inject(HttpClient);
 
-    // private configService = inject(ConfigService);
-
-    // private baseUrl = 'http://rx2025apiservice.revampapps.com';
-
     private baseUrl = 'https://rmpapi.iworkx.in';
 
     public getMenuService(id: number): Observable<any> {
         const key = sessionStorage.getItem('key');
         return this.httpClient.get(`${this.baseUrl}/GetMenuLogin?Userid=${id}&databaseKey=${key}`)
+    }
+
+    public getDashboardService(user: String): Observable<any> {
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/DashboardData?User=${user}&databaseKey=${key}`)
+    }
+
+    public getDashboardIndividualDataService(id: number,user: String): Observable<any> {
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/DashboardIndividualData?User=${user}&DsbId=${id}&databaseKey=${key}`);
     }
 
     public getMenuExplorerService(mdlId: String, usrId: number): Observable<any> {
@@ -65,7 +71,6 @@ export class ApiService {
         const key = sessionStorage.getItem('key');
         return this.httpClient.post(`${this.baseUrl}/AdvRpt-CreateCallId?databaseKey=${key}`, data);
     }
-
     public getExcelReportGenerateService(data: any) {
         const { titleStr, primeId, mdlId, user, htmlRpt, filterCondition } = data;
         const key = sessionStorage.getItem('key');

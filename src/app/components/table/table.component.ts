@@ -227,7 +227,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
         this.tableConfigs = data;
         this.visiblityRights = this.tableConfigs['IN_IsExplrNeed'].split('|');
         this.title = this.tableConfigs['IN_TitleStr'];
-        console.log(this.tableConfigs);
         this.typeStr = this.tableConfigs['IN_TypeStr']
         this.detailsData = {
             mdlId: this.module.toString(),
@@ -249,8 +248,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
                 arr.push(this.displayedColumns[i]);
             }
         };
-
-        console.log(arr);
 
         const totals = arr.reduce((acc: any, column: String) => {
             acc[column.toString()] = 0;

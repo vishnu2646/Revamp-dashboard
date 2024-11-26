@@ -56,3 +56,10 @@ export const mapRelatedTable = (data: any) => {
 
     return data;
 }
+
+
+// export function groupByData<T>(collection:T[],key: keyof T){
+//     const groupedResult = Map.groupBy(collection, key);
+
+//     return groupedResult
+// }

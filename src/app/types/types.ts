@@ -85,3 +85,45 @@ export interface IAdvRmpRptGenData {
         Table1: IReportGroup[]
     }
 }
+
+
+export interface ITilesData {
+    DSBTitle: String;
+    DSbId: number;
+    DSbTypeSize: String;
+    DisplayValue: number;
+    Priority: number;
+    RcdCount: number
+}
+
+export interface IChartData {
+    DSBTitle: String;
+    DsbId: number;
+    Xlabel: String;
+    Yvalues: number;
+}
+
+export interface IDashboardTable {
+    DSBTitle: String;
+    Invdate: String;
+    Invno: String;
+    Nettotal: number;
+    Party: String;
+    Refno: String;
+    Roundoff: number;
+    Subtotal: number;
+    Taxtotal: number;
+}
+
+export interface IDashboardType {
+    DSBStoredProName: String;
+    DSBTitle: String;
+    DSBTitleDisplayName: String;
+    DSBid: number;
+    DisplayvalueCol: String;
+    ExpandData: String;
+    GraphSize: String;
+    RcdCnountCol: String;
+    labelSize: String;
+    labelTitle: String
+}
