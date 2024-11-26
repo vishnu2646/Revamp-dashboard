@@ -6,7 +6,7 @@
         </div>
         <div class="form">
             <mat-form-field appearance="outline">
-                <mat-select placeholder="Select any Options" [(ngModel)]="key">
+                <mat-select placeholder="Select any Options">
                     @for (tile of tilesData; track tile) {
                         <mat-option [value]="tile.DSBTitle" (onSelectionChange)="handleSelectionOption(tile)">{{tile.DSBTitle}}</mat-option>
                     }
@@ -23,7 +23,7 @@
                     </mat-card-header>
                     <mat-card-content>
                         <mat-icon>
-                            point_of_sale
+                            shopping_bag
                         </mat-icon>
                         <h3>{{ tileData.DisplayValue   | currency:'INR' }}</h3>
                         <div class="details">

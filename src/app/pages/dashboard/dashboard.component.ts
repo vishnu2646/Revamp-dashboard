@@ -73,10 +73,11 @@ export class DashboardComponent implements OnInit {
         try {
             const response = await lastValueFrom(this.apiService.getDashboardIndividualDataService(tile.DSbId, this.userData.UsrName));
             if(response && response['DashboardIndividualData']) {
-                const { Table, Table1 } = response['DashboardIndividualData'];
+                const { Table, Table1, Table2 } = response['DashboardIndividualData'];
                 this.chartData = Table;
                 this.displayColumns = Object.keys(Table1[0]);
                 this.dashboardTableData.data = Table1;
+                this.type = Table2[0];
                 this.renderChart();
             }
         } catch (error) {
@@ -84,7 +85,10 @@ export class DashboardComponent implements OnInit {
         }
     }
 
+    public isLoading = false;
+
     private async handleGetDashboardData() {
+        this.isLoading = !this.isLoading;
         try {
             const responseData: any = await lastValueFrom(this.apiService.getDashboardService(this.userData.UsrName));
             if(responseData && responseData['DashboardData']) {
@@ -139,6 +143,32 @@ export class DashboardComponent implements OnInit {
                 datasets: [{
                     label: "Amount",
                     data: values,
+                    fill: {
+                        target: 'origin',
+                        above: '#d9d0fb4d',
+                    },
+                    backgroundColor: [
+                        "rgba(253, 127, 111, 0.2)",
+                        "rgba(126, 176, 213, 0.2)",
+                        "rgba(178, 224, 97, 0.2)",
+                        "rgba(189, 126, 190, 0.2)",
+                        "rgba(255, 181, 90, 0.2)",
+                        "rgba(255, 238, 101, 0.2)",
+                        "rgba(190, 185, 219, 0.2)",
+                        "rgba(253, 204, 229, 0.2)",
+                        "rgba(139, 211, 199, 0.2)"
+                    ],
+                    borderColor: [
+                        "rgb(253, 127, 111)",
+                        "rgb(126, 176, 213)",
+                        "rgb(178, 224, 97)",
+                        "rgb(189, 126, 190)",
+                        "rgb(255, 181, 90)",
+                        "rgb(255, 238, 101)",
+                        "rgb(190, 185, 219)",
+                        "rgb(253, 204, 229)",
+                        "rgb(139, 211, 199)"
+                    ],
                 }]
             },
             options: {
