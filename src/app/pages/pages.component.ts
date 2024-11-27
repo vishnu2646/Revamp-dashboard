@@ -101,7 +101,7 @@ export class PagesComponent implements OnInit {
     }
 
     public handleLogout() {
-        const key = this.userService.getUserData();
+        const key = this.userService.getCookieData();
         this.router.navigate(['/'], { queryParams: { key: key } });
         this.userService.logoutService(this.userData.logid, this.userData.UsrId);
     }
