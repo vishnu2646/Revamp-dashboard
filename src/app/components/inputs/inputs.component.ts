@@ -85,7 +85,7 @@ export class InputsComponent implements OnInit, OnChanges {
     }
 
     public handleGetUserData() {
-        const data: any = this.userService.getCookieData();
+        const data: any = this.userService.getUserData();
         if(data) {
             this.userData = data;
         }

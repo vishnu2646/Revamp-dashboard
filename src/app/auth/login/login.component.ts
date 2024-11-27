@@ -78,7 +78,8 @@ export class LoginComponent {
             if(repsonseData && repsonseData['GetLoginApi']) {
                 this.dataToCookie = repsonseData['GetLoginApi'].Table[0]
                 this.dataToCookie['sessionId'] = this.user.SessionId;
-                this.userService.setCookie(this.dataToCookie);
+                // this.userService.setCookie(this.dataToCookie);
+                sessionStorage.setItem('user', JSON.stringify(this.dataToCookie));
                 this.router.navigate(['/dashboard']);
             }
         } catch (error) {

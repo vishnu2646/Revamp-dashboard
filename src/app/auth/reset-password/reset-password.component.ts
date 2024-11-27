@@ -43,7 +43,7 @@ export class ResetPasswordComponent implements OnInit {
     }
 
     public handleGetUserData() {
-        const data: IUser = this.userService.getCookieData() as IUser;
+        const data = this.userService.getUserData();
         if(data) {
             this.userData = data;
         }

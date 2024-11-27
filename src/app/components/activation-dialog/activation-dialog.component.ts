@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Component, Inject, inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { ApiService } from '../../services/api/api.service';
+import { IUser } from '../../types/types';
+import { UserserviceService } from '../../services/user/userservice.service';
 
 
 @Component({
@@ -15,4 +18,32 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class ActivationDialogComponent {
 
+    private apiService = inject(ApiService);
+
+    private userService = inject(UserserviceService);
+
+    private userData: any;
+
+    public dialogRef = inject(MatDialogRef<ActivationDialogComponent>);
+
+    ngOnInit() {
+        const data: IUser = this.userService.getUserData() as IUser;
+        if(data) {
+            this.userData = data;
+        }
+    }
+
+    onOk() {
+        this.apiService.getDashboardActivationService(this.userData.UsrId, this.userData.AuthCode, this.userData.logid).subscribe((data) => {
+            if(data && data.GetAspSessionId) {
+                const refId = data.GetAspSessionId.Table[0].AspSessId;
+                sessionStorage.setItem('refId', refId);
+            }
+        });
+        this.dialogRef.close();
+    }
+
+    onCancel() {
+        this.dialogRef.close();
+    }
 }

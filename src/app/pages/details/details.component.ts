@@ -102,7 +102,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
 
     public handleGetUserData(): void {
-        const data: IUser = this.userService.getCookieData() as IUser;
+        const data: IUser = this.userService.getUserData() as IUser;
         if(data) {
             this.userData = data;
         }
@@ -124,21 +124,24 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
 
     public handleEditRouter(action: String) {
-        // const routeData = sessionStorage.getItem('route');
-        // let path;
-        // if(routeData) {
-        //     const { WebPath } = JSON.parse(routeData);
-        //     path = WebPath.replace("~", '');
-        // }
+        const routeData = sessionStorage.getItem('route');
+        let path;
+        if(routeData) {
+            const { WebPath } = JSON.parse(routeData);
+            path = WebPath.replace("~", '');
+        }
 
-        // const { idData, data, title, typeStr } = this.recivedData;
+        const { idData, data, title, typeStr } = this.recivedData;
 
-        // const linkData =  {
-        //     mdlId: idData.mdlId,
-        //     primeId: data[idData.primeId],
-        // }
-        // const url=`http://annamfoods.revampapps.com${path}?ActionStr=${action}&PrimeIdStr=${linkData.primeId}&TitleStr=${typeStr}&MdlId=${linkData.mdlId}&Module=${title}&User=${this.userData.UsrName}&RefId=${this.userData.sessionId}`
-        const url = "https://trialspfl.iservicex.in"
+        const linkData =  {
+            mdlId: idData.mdlId,
+            primeId: data[idData.primeId],
+        }
+
+        const refId = sessionStorage.getItem("refId");
+        const url = `${this.userData.AppUrl}${path}?ActionStr=${action}&PrimeIdStr=${linkData.primeId}&TitleStr=${typeStr}&MdlId=${linkData.mdlId}&Module=${title}&User=${this.userData.UsrName}&RefId=${refId}`;
+        console.log(url);
+
         window.open(url, '_blank');
     }
 

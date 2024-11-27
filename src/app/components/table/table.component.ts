@@ -155,7 +155,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public handleGetUserData() {
-        const data: IUser = this.userService.getCookieData() as IUser;
+        const data = this.userService.getUserData();
         if(data) {
             this.userData = data;
         }

@@ -61,7 +61,7 @@ export class PagesComponent implements OnInit {
     }
 
     public handleGetUserData() {
-        const data: any = this.userService.getCookieData();
+        const data: any = this.userService.getUserData();
         if(data) {
             this.userData = data;
         }
@@ -101,7 +101,7 @@ export class PagesComponent implements OnInit {
     }
 
     public handleLogout() {
-        const key = sessionStorage.getItem('key');
+        const key = this.userService.getUserData();
         this.router.navigate(['/'], { queryParams: { key: key } });
         this.userService.logoutService(this.userData.logid, this.userData.UsrId);
     }

@@ -80,7 +80,7 @@ export class ActivitesComponent {
     }
 
     public handleGetUserData(): void {
-        const data: IUser = this.userService.getCookieData() as IUser;
+        const data: IUser = this.userService.getUserData() as IUser;
         if(data) {
             this.userData = data;
         }

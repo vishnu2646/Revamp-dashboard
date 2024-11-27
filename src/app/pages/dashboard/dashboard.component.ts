@@ -71,7 +71,12 @@ export class DashboardComponent implements OnInit {
     public ngOnInit() {
         this.handleGetUserData();
         this.handleGetDashboardData();
-        this.handleSendActivation();
+
+        const refId = sessionStorage.getItem('refId');
+
+        if(!refId || refId.length === 0) {
+            this.handleSendActivation();
+        }
     }
 
     public async handleSelectionOption(tile: ITilesData) {
@@ -90,31 +95,39 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    public handleSendActivation() {
-        const url = `${this.userData.AppUrl}/AuthStart_prj/AuthStart_prj.aspx?User=${this.userData.UsrId}&AuthCode=${this.userData.AuthCode}&Logid=${this.userData.logid}`;
-        window.open(url, '_blank');
+    private window: any;
 
-        // To open the dialog automatically when dashboard is loaded.
-        this.activationDialog.open(ActivationDialogComponent)
+    public handleSendActivation() {
+
+        const url = `${this.userData.AppUrl}/AuthStart_prj/AuthStart_prj.aspx?User=${this.userData.UsrId}&AuthCode=${this.userData.AuthCode}&Logid=${this.userData.logid}`;
+        this.openAspxWindow(url)
 
         // Gets the refrence to the dialog.
+        // To open the dialog automatically when dashboard is loaded.
         const dialogRef = this.activationDialog.open(ActivationDialogComponent);
 
         dialogRef.afterClosed().pipe(
             catchError(error => {
-                console.log("Activation Falied",error);
+                console.log("Activation Falied", error);
                 return of(null);
             })
         ).subscribe({
             next: () => {
-                this.apiService.getDashboardActivationService(this.userData.UsrId, this.userData.AuthCode, this.userData.logid).subscribe((data) => {
-                    console.log("Activation",data);
-                });
+                // this.closeAspxWindow();
+                console.log("Activation close window");
             },
             complete: () => {
-                console.log("Activation Complete");
+                console.log("Activation process Complete");
             }
         });
+    }
+
+    private openAspxWindow(url: string) {
+        this.window = window.open(url, '_blank');
+    }
+
+    private closeAspxWindow() {
+        this.window.close();
     }
 
     private async handleGetDashboardData() {
@@ -152,7 +165,7 @@ export class DashboardComponent implements OnInit {
     }
 
     private handleGetUserData() {
-        const data: IUser = this.userService.getCookieData() as IUser;
+        const data: IUser = this.userService.getUserData() as IUser;
         if(data) {
             this.userData = data;
         }

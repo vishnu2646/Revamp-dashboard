@@ -44,7 +44,7 @@ export class ChangePasswordComponent {
     }
 
     public handleGetUserData() {
-        const data: IUser = this.userService.getCookieData() as IUser;
+        const data = this.userService.getUserData();
         if(data) {
             this.userData = data;
             this.passwordInfo.username = this.userData.UsrName;

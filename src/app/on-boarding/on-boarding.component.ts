@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -7,6 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { UserserviceService } from '../services/user/userservice.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-on-boarding',
@@ -27,15 +29,19 @@ export class OnBoardingComponent {
 
     private activatedRoute = inject(ActivatedRoute);
 
+    private userService = inject(UserserviceService);
+
+    private cookieService = inject(CookieService);
+
     public isKeyAvalible: boolean = false;
 
     public key: String = '';
 
     constructor() {
         this.activatedRoute.queryParams.subscribe(params => {
+            // const key = this.userService.getCookieData()
             if(params['key']) {
-                console.log(params['key']);
-                sessionStorage.setItem('key', params['key']);
+                this.userService.setCookie(params['key']);
                 this.router.navigate(['/auth/login']);
             }
         })
@@ -43,8 +49,7 @@ export class OnBoardingComponent {
 
     public handleSetDatabaseKey (): void {
         if(this.key.length > 5) {
-            sessionStorage.setItem('key', this.key.toString());
-            this.router.navigate(['/auth/login']);
+            this.userService.setCookie(this.key.toString())
         } else {
             alert('Please enter valid key');
         }
