@@ -7,7 +7,7 @@
 
                     <!-- {{ optionsRights | json }} -->
                     <div class="icons">
-                        <mat-icon *ngIf="optionsRights?.Rights_New">
+                        <mat-icon *ngIf="optionsRights?.Rights_New" (click)="handleAddNewDataRoute('New')">
                             add
                         </mat-icon>
                         <mat-icon (click)="openFilterSheet()" *ngIf="dateFilterField">
@@ -39,6 +39,7 @@
                         [isFilterApplied]="isFilterApplied"
                         (filterApplied)="handleFilterApplied($event)"
                         [filterValue]="filterValue"
+                        (titleType)="handleTitleType($event)"
                     ></app-table>
                 </mat-tab>
                 <mat-tab>

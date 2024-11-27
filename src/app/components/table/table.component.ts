@@ -223,6 +223,9 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
         return responseData && responseData['CheckMenuExplr'] && responseData['CheckMenuExplr'].Table.length > 0;
     }
 
+    @Output()
+    public titleType = new EventEmitter<any>();
+
     private processTable1Data(data: any) {
         this.tableConfigs = data;
         this.visiblityRights = this.tableConfigs['IN_IsExplrNeed'].split('|');
@@ -232,6 +235,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy {
             mdlId: this.module.toString(),
             primeId: this.tableConfigs['IN_PrimdId'].toString(),
         }
+        this.titleType.emit({
+            title: this.title,
+            typeStr: this.typeStr
+        })
     }
 
     private getTotals() {

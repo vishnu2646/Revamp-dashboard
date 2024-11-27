@@ -56,6 +56,11 @@ export class DataviewComponent implements OnInit, OnDestroy {
 
     private optionsRightsSubscription: Subscription | undefined;
 
+    private tileTypeData: { title: String, typeStr: String } = {
+        title: "",
+        typeStr: ""
+    };
+
     public userData: any;
 
     public module: String = '';
@@ -190,5 +195,28 @@ export class DataviewComponent implements OnInit, OnDestroy {
             queryParams: params,
             queryParamsHandling: 'merge',
         });
+    }
+
+    public handleTitleType(event: { title: String, typeStr: String }) {
+        if(event.title && event.typeStr) {
+            this.tileTypeData = event;
+        }
+    }
+
+    public handleAddNewDataRoute(action: String) {
+        const routeData = sessionStorage.getItem('route');
+
+        let path;
+
+        if(routeData) {
+            const { WebPath } = JSON.parse(routeData);
+            path = WebPath.replace("~", '');
+        }
+
+        const refId = sessionStorage.getItem("refId");
+
+        const url = `${this.userData.AppUrl}${path}?ActionStr=${action}&TitleStr=${this.tileTypeData.typeStr}&MdlId=${this.module}&Module=${this.tileTypeData.title}&User=${this.userData.UsrName}&RefId=${refId}`;
+
+        window.open(url, "_blank");
     }
 }
