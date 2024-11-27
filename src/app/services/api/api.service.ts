@@ -24,6 +24,11 @@ export class ApiService {
         return this.httpClient.get(`${this.baseUrl}/DashboardData?User=${user}&databaseKey=${key}`)
     }
 
+    public getDashboardActivationService(userId: number, authCode: String, logId: number): Observable<any> {
+        const key = sessionStorage.getItem('key');
+        return this.httpClient.get(`${this.baseUrl}/GetAspSessionId?UsrId=${userId}&Authcode=${authCode}&Logid=${logId}&databaseKey=${key}`)
+    }
+
     public getDashboardIndividualDataService(id: number,user: String): Observable<any> {
         const key = sessionStorage.getItem('key');
         return this.httpClient.get(`${this.baseUrl}/DashboardIndividualData?User=${user}&DsbId=${id}&databaseKey=${key}`);

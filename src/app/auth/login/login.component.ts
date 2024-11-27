@@ -66,33 +66,10 @@ export class LoginComponent {
     public otp: String = '';
 
     public ngOnInit() {
-        // const data: IUser | string = this.userService.getCookieData() as IUser | string;
-        // if(data !== "No cookie data") {
-        //     // this.router.navigate(['/dashboard']);
-        //     console.log(data);
-        // }
         const sessionId = uuidv4();
         this.user.SessionId = sessionId;
         this.handleUpdateIpAddress();
     }
-
-    // public async handleVerifyOtp() {
-    //     const data = {
-    //         otp: this.otp,
-    //         logId: this.dataToCookie.logid
-    //     };
-
-    //     try {
-    //         const responseData = await lastValueFrom(this.userService.verifyOtpService(data))
-    //         if(responseData) {
-    //             alert(responseData.message);
-    //         }
-    //         this.userService.setCookie(this.dataToCookie);
-    //         this.router.navigate(['/dashboard']);
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
 
     public async handleLogin() {
         this.isLoading = !this.isLoading;

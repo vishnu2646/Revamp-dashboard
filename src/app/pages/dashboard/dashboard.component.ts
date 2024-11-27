@@ -15,10 +15,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { IChartData, IDashboardTable, IDashboardType, ITilesData, IUser } from '../../types/types';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { ApiService } from '../../services/api/api.service';
-import { from, lastValueFrom, map, Observable } from 'rxjs';
+import { catchError, from, lastValueFrom, map, Observable, of } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 import { LoaderComponent } from '../../components/loader/loader.component';
 import { MatOptionSelectionChange } from '@angular/material/core';
+import { ActivationDialogComponent } from '../../components/activation-dialog/activation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 
 Chart.register(...registerables)
@@ -48,6 +50,8 @@ export class DashboardComponent implements OnInit {
 
     private cd = inject(ChangeDetectorRef);
 
+    private readonly activationDialog = inject(MatDialog);
+
     public key = '';
 
     public userData: any;
@@ -67,6 +71,7 @@ export class DashboardComponent implements OnInit {
     public ngOnInit() {
         this.handleGetUserData();
         this.handleGetDashboardData();
+        this.handleSendActivation();
     }
 
     public async handleSelectionOption(tile: ITilesData) {
@@ -85,10 +90,34 @@ export class DashboardComponent implements OnInit {
         }
     }
 
-    public isLoading = false;
+    public handleSendActivation() {
+        const url = `${this.userData.AppUrl}/AuthStart_prj/AuthStart_prj.aspx?User=${this.userData.UsrId}&AuthCode=${this.userData.AuthCode}&Logid=${this.userData.logid}`;
+        window.open(url, '_blank');
+
+        // To open the dialog automatically when dashboard is loaded.
+        this.activationDialog.open(ActivationDialogComponent)
+
+        // Gets the refrence to the dialog.
+        const dialogRef = this.activationDialog.open(ActivationDialogComponent);
+
+        dialogRef.afterClosed().pipe(
+            catchError(error => {
+                console.log("Activation Falied",error);
+                return of(null);
+            })
+        ).subscribe({
+            next: () => {
+                this.apiService.getDashboardActivationService(this.userData.UsrId, this.userData.AuthCode, this.userData.logid).subscribe((data) => {
+                    console.log("Activation",data);
+                });
+            },
+            complete: () => {
+                console.log("Activation Complete");
+            }
+        });
+    }
 
     private async handleGetDashboardData() {
-        this.isLoading = !this.isLoading;
         try {
             const responseData: any = await lastValueFrom(this.apiService.getDashboardService(this.userData.UsrName));
             if(responseData && responseData['DashboardData']) {
