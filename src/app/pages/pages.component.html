@@ -61,6 +61,11 @@
             </div>
 
             <div class="static-menus">
+                <button type="button" color="accent" mat-icon-button (click)="handleRefresh()">
+                    <mat-icon>
+                        autorenew
+                    </mat-icon>
+                </button>
                 <button type="button" color="primary" mat-button [matMenuTriggerFor]="loginMenu">
                     <mat-icon>person</mat-icon>
                     {{ userData.UsrName || 'Anonymous User' }}

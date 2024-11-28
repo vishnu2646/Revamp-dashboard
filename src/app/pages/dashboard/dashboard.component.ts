@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChangeDetectorRef, Component, inject, OnInit, Pipe } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit, Pipe } from '@angular/core';
 
 import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from '@angular/material/icon';
@@ -15,7 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { IChartData, IDashboardTable, IDashboardType, ITilesData, IUser } from '../../types/types';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { ApiService } from '../../services/api/api.service';
-import { catchError, from, lastValueFrom, map, Observable, of } from 'rxjs';
+import { catchError, from, lastValueFrom, map, Observable, of, Subscription } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
 import { LoaderComponent } from '../../components/loader/loader.component';
 import { MatOptionSelectionChange } from '@angular/material/core';
@@ -43,7 +43,7 @@ Chart.register(...registerables)
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
     private userService = inject(UserserviceService);
 
     private apiService = inject(ApiService);
@@ -51,6 +51,12 @@ export class DashboardComponent implements OnInit {
     private cd = inject(ChangeDetectorRef);
 
     private readonly activationDialog = inject(MatDialog);
+
+    private window: any;
+
+    private refreshSubscription: Subscription | null = null;
+
+    private selectedTile: ITilesData = {} as ITilesData;
 
     public key = '';
 
@@ -77,9 +83,22 @@ export class DashboardComponent implements OnInit {
         if(!refId || refId.length === 0) {
             this.handleSendActivation();
         }
+
+        this.refreshSubscription = this.userService.refreshSubject$.subscribe(() => {
+            this.handleSelectionOption(this.selectedTile);
+        });
+    }
+
+    public ngOnDestroy(): void {
+        if(this.refreshSubscription) {
+            this.refreshSubscription.unsubscribe();
+        }
     }
 
     public async handleSelectionOption(tile: ITilesData) {
+
+        this.selectedTile = tile;
+
         try {
             const response = await lastValueFrom(this.apiService.getDashboardIndividualDataService(tile.DSbId, this.userData.UsrName));
             if(response && response['DashboardIndividualData']) {
@@ -93,9 +112,9 @@ export class DashboardComponent implements OnInit {
         } catch (error) {
             console.log(error);
         }
-    }
 
-    private window: any;
+
+    }
 
     public handleSendActivation() {
 
@@ -113,11 +132,7 @@ export class DashboardComponent implements OnInit {
             })
         ).subscribe({
             next: () => {
-                // this.closeAspxWindow();
-                console.log("Activation close window");
-            },
-            complete: () => {
-                console.log("Activation process Complete");
+                this.closeAspxWindow();
             }
         });
     }

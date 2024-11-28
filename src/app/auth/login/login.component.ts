@@ -4,6 +4,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterModule } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,9 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IMAGE_CONFIG } from '@angular/common';
 import { IpserviceService } from '../../services/ipService/ipservice.service';
-import { IUser, IUserInfo } from '../../types/types';
+import { IUser } from '../../types/types';
 import { LoaderComponent } from '../../components/loader/loader.component';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-login',
@@ -40,6 +40,8 @@ import { CookieService } from 'ngx-cookie-service';
     ]
 })
 export class LoginComponent {
+    private _snackBar = inject(MatSnackBar);
+
     private router = inject(Router);
 
     private userData: IUser = {} as IUser;
@@ -80,6 +82,7 @@ export class LoginComponent {
                 this.dataToCookie['sessionId'] = this.user.SessionId;
                 // this.userService.setCookie(this.dataToCookie);
                 sessionStorage.setItem('user', JSON.stringify(this.dataToCookie));
+                this.openSnackBar('Login Successfull', 'X');
                 this.router.navigate(['/dashboard']);
             }
         } catch (error) {
@@ -98,6 +101,14 @@ export class LoginComponent {
             if(Object.keys(data).includes('ip')) {
                 this.user.IPAddress = data['ip'];
             }
+        });
+    }
+
+    private openSnackBar(message: string, action: string) {
+        this._snackBar.open(message, action, {
+            horizontalPosition: "right",
+            verticalPosition: "top",
+            duration: 2000
         });
     }
 

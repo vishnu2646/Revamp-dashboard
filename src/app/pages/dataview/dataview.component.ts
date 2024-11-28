@@ -109,7 +109,9 @@ export class DataviewComponent implements OnInit, OnDestroy {
         this.router.events.subscribe((event) => {
             if(event instanceof NavigationStart) {
                 const input = document.getElementById('search') as HTMLInputElement;
-                input.value = '';
+                if(input) {
+                    input.value = '';
+                }
                 this.closeSearchField();
             }
         });

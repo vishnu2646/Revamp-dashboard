@@ -1,6 +1,6 @@
 <section class="recent-activity-wrapper" [class.isRoute]="!isChild">
     <div class="titles">
-        <h2>Recent Activites</h2>
+        <h2>Recent Activites {{ isChild }}</h2>
         <p (click)="handleNativateActivity()">For More Details >></p>
     </div>
     <ng-container *ngIf="isLoadingResults; else tableTemplate">
@@ -8,10 +8,50 @@
     </ng-container>
     <ng-template #tableTemplate>
         <ng-container *ngIf="dataSource.data.length; else noDataTemplate">
-            <mat-form-field appearance="outline" *ngIf="toggleFilter">
-                <mat-label>Filter</mat-label>
-                <input matInput (keyup)="applyFilter($event)" placeholder="Filter Recent Activites" #input>
-            </mat-form-field>
+            <ng-template #dialogContent>
+                <div class="contents">
+                    <br />
+                    <mat-form-field appearance="outline">
+                        <mat-label>Username</mat-label>
+                        <mat-select [(ngModel)]="filterFields.username" placeholder="Select Username">
+                            @for (item of username; track item) {
+                                <mat-option [value]="item">{{ item }}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    <br />
+                    <mat-form-field appearance="outline" class="date">
+                        <mat-label>Date</mat-label>
+                        <input matInput [matDatepicker]="picker" placeholder="Choose a Date" [(ngModel)]="filterFields.actiontime">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <br />
+                    <mat-form-field appearance="outline">
+                        <mat-label>Module</mat-label>
+                        <mat-select [(ngModel)]="filterFields.module" placeholder="Select a module">
+                            @for (item of modules; track item) {
+                                <mat-option [value]="item">{{ item }}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </ng-template>
+            <ng-template #dialogActions>
+                <button mat-button color="primary" (click)="handleCloseDialog()">Cancel</button>
+                <button mat-button color="primary" (click)="applyFilter()">Filter Data</button>
+            </ng-template>
+            <button mat-icon-button color="accent" (click)="openDialog(dialogContent, dialogActions)" *ngIf="dataSource.filter.length === 0 && !isChild">
+                <mat-icon>
+                    filter_alt
+                </mat-icon>
+            </button>
+            <button mat-icon-button color="primary" (click)="clearFilter()" *ngIf="dataSource.filter.length > 0">
+                <mat-icon>
+                    filter_alt_off
+                </mat-icon>
+            </button>
+
             <div class="table-wrapper">
                 <table mat-table [dataSource]="dataSource" id="table-data">
 

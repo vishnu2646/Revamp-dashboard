@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 
 import { IUser, IUserInfo } from '../../types/types';
@@ -17,6 +17,14 @@ export class UserserviceService {
     private baseUrl = 'https://rmpapi.iworkx.in';
 
     private cookieService = inject(CookieService);
+
+    private refreshSubject = new Subject<void>();
+
+    public refreshSubject$ = this.refreshSubject.asObservable();
+
+    public triggerRefresh() {
+        this.refreshSubject.next();
+    }
 
     public setCookie(key: string): void {
         // 3 days Calculation.

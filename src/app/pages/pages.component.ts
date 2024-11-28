@@ -106,6 +106,10 @@ export class PagesComponent implements OnInit {
         this.userService.logoutService(this.userData.logid, this.userData.UsrId);
     }
 
+    public handleRefresh() {
+        this.userService.triggerRefresh();
+    }
+
     private toggleLoadingState() {
         this.isMenuLoading = !this.isMenuLoading;
     }

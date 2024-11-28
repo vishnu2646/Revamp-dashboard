@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>
+    {{ title }}
+</h2>
+<mat-dialog-content>
+    <ng-container *ngIf="content; else defaultContent">
+        <ng-container *ngTemplateOutlet="content"></ng-container>
+    </ng-container>
+    <ng-template #defaultContent>
+        <p>No content provided.</p>
+    </ng-template>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <ng-container *ngIf="actions">
+        <ng-container *ngTemplateOutlet="actions"></ng-container>
+    </ng-container>
+</mat-dialog-actions>
