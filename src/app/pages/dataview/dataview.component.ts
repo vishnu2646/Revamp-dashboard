@@ -79,16 +79,17 @@ export class DataviewComponent implements OnInit, OnDestroy {
 
     public isChild = false;
 
+    public tabIndex: number = 0;
+
     @ViewChild(MatTabGroup)
     public tabGroup!: MatTabGroup;
-
-    public tabIndex: number = 0;
 
     public ngOnInit(): void {
         this.activatedRoute.queryParams.subscribe(params => {
             this.module = params['module'];
             if(params['activity']) {
                 this.tabIndex = this.getTabIndexFromActivity('grid_view');
+                this.isChild = !this.isChild;
             } else {
                 this.tabIndex = 0;
             }
