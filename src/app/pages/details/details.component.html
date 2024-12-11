@@ -27,7 +27,7 @@
                             <button mat-icon-button matTooltip="History" matTooltipPosition="above" (click)="handleToggleOptionsState('history')" *ngIf="optionRights['Right_History'] === 1" [matBadge]="historyData.length">
                                 <mat-icon>history</mat-icon>
                             </button>
-                            <button mat-icon-button matTooltip="Edit" matTooltipPosition="above" color="warn" (click)="handleEditRouter('Edit')">
+                            <button mat-icon-button matTooltip="Edit" matTooltipPosition="above" color="warn" (click)="handleEditRouter('Edit')" *ngIf="optionRights['Rights_Edit'] === 1">
                                 <mat-icon>edit</mat-icon>
                             </button>
                             <button mat-icon-button matTooltip="Attachments" matTooltipPosition="above" color="warn" (click)="handleToggleOptionsState('attachment')" [matBadge]="attachmentsData.length" *ngIf="optionRights['Rights_Attachement'] === 1">

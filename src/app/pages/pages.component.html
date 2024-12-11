@@ -72,6 +72,7 @@
                 </button>
                 <mat-menu #loginMenu="matMenu">
                     <button mat-menu-item routerLink="/dashboard/advance-report" routerLinkActive="true">Advance Report</button>
+                    <button mat-menu-item (click)="handleSendActivation()" [disabled]="disableActivation">{{ disableActivation ? 'Activated': 'Activate for new entries' }}</button>
                     <button mat-menu-item (click)="handleNavigate({}, true)">Recent Activity</button>
                     <button mat-menu-item (click)="handleLogout()">Logout</button>
                 </mat-menu>

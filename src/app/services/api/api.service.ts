@@ -37,6 +37,11 @@ export class ApiService {
         return this.httpClient.get(`${this.baseUrl}/DashboardIndividualData?User=${user}&DsbId=${id}&databaseKey=${key}`);
     }
 
+    public getGetDashboardModelService(user: String): Observable<any> {
+        const key = this.cookieService.get('key');
+        return this.httpClient.get(`${this.baseUrl}/GetDashboardModelRev?User=${user}&databaseKey=${key}`)
+    }
+
     public getMenuExplorerService(mdlId: String, usrId: number): Observable<any> {
         const key = this.cookieService.get('key');
         return this.httpClient.get(`${this.baseUrl}/MenuExplr?MdlId=${mdlId}&UserId=${usrId}&databaseKey=${key}`);

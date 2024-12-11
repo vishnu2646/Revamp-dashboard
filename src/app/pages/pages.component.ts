@@ -2,7 +2,7 @@ import { Component, signal, ChangeDetectionStrategy, inject, OnInit, ChangeDetec
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
-import { lastValueFrom } from 'rxjs';
+import { catchError, lastValueFrom, of } from 'rxjs';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +15,8 @@ import { LoaderComponent } from "../components/loader/loader.component";
 import { UserserviceService } from '../services/user/userservice.service';
 import { ApiService } from '../services/api/api.service';
 import { groupData } from '../utils/utils';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivationDialogComponent } from '../components/activation-dialog/activation-dialog.component';
 
 @Component({
     selector: 'app-pages',
@@ -41,6 +43,10 @@ export class PagesComponent implements OnInit {
 
     private apiService = inject(ApiService);
 
+    private window: any;
+
+    public disableActivation = false;
+
     public readonly panelOpenState = signal(false);
 
     public userData: any;
@@ -58,6 +64,7 @@ export class PagesComponent implements OnInit {
     public ngOnInit() {
         this.handleGetUserData();
         this.hangleGetMenu();
+        this.handleActivationDisable();
     }
 
     public handleGetUserData() {
@@ -110,7 +117,55 @@ export class PagesComponent implements OnInit {
         this.userService.triggerRefresh();
     }
 
+    private readonly activationDialog = inject(MatDialog);
+
+    public handleSendActivation() {
+
+        const refId = sessionStorage.getItem('refId');
+
+        if(refId && refId.length > 0) {
+            return;
+        }
+
+        const url = `${this.userData.AppUrl}/AuthStart_prj/AuthStart_prj.aspx?User=${this.userData.UsrId}&AuthCode=${this.userData.AuthCode}&Logid=${this.userData.logid}`;
+        this.openAspxWindow(url)
+
+        // Gets the refrence to the dialog.
+        // To open the dialog automatically when dashboard is loaded.
+        const dialogRef = this.activationDialog.open(ActivationDialogComponent);
+
+        dialogRef.afterClosed().pipe(
+            catchError(error => {
+                console.log("Activation Falied", error);
+                return of(null);
+            })
+        ).subscribe({
+            next: () => {
+                this.closeAspxWindow();
+            }
+        });
+    }
+
+    private openAspxWindow(url: string) {
+        this.window = window.open(url, '_blank');
+    }
+
+    private closeAspxWindow() {
+        this.handleActivationDisable()
+        this.window.close();
+    }
+
     private toggleLoadingState() {
         this.isMenuLoading = !this.isMenuLoading;
+    }
+
+    private handleActivationDisable() {
+        const refId = sessionStorage.getItem('refId');
+
+        if(refId && refId.length > 0) {
+            this.disableActivation = true;
+        } else {
+            this.disableActivation = false;
+        }
     }
 }

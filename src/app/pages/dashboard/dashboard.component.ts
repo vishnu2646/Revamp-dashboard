@@ -56,6 +56,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private refreshSubscription: Subscription | null = null;
 
+    private activationSubscription: Subscription | null = null;
+
     private selectedTile: ITilesData = {} as ITilesData;
 
     public key = '';
@@ -77,12 +79,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         this.handleGetUserData();
         this.handleGetDashboardData();
-
-        const refId = sessionStorage.getItem('refId');
-
-        if(!refId || refId.length === 0) {
-            this.handleSendActivation();
-        }
 
         this.refreshSubscription = this.userService.refreshSubject$.subscribe(() => {
             this.handleSelectionOption(this.selectedTile);
@@ -112,37 +108,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         } catch (error) {
             console.log(error);
         }
-
-
-    }
-
-    public handleSendActivation() {
-
-        const url = `${this.userData.AppUrl}/AuthStart_prj/AuthStart_prj.aspx?User=${this.userData.UsrId}&AuthCode=${this.userData.AuthCode}&Logid=${this.userData.logid}`;
-        this.openAspxWindow(url)
-
-        // Gets the refrence to the dialog.
-        // To open the dialog automatically when dashboard is loaded.
-        const dialogRef = this.activationDialog.open(ActivationDialogComponent);
-
-        dialogRef.afterClosed().pipe(
-            catchError(error => {
-                console.log("Activation Falied", error);
-                return of(null);
-            })
-        ).subscribe({
-            next: () => {
-                this.closeAspxWindow();
-            }
-        });
-    }
-
-    private openAspxWindow(url: string) {
-        this.window = window.open(url, '_blank');
-    }
-
-    private closeAspxWindow() {
-        this.window.close();
     }
 
     private async handleGetDashboardData() {
