@@ -1,109 +1,57 @@
 <section class="dashboard">
-    <div class="title-header">
+    <div class="header">
         <div class="actions">
-            <h2>{{ type.DSBTitle }} Dashboard</h2>
-            <!-- <h5 (click)="handleRoute()">Link</h5> -->
-        </div>
-        <div class="form">
-            <mat-form-field appearance="outline">
-                <mat-select placeholder="Select any Options">
-                    @for (tile of tilesData; track tile) {
-                        <mat-option [value]="tile.DSBTitle" (onSelectionChange)="handleSelectionOption(tile)">{{tile.DSBTitle}}</mat-option>
-                    }
-                </mat-select>
-            </mat-form-field>
+            <h2>Dashboard</h2>
         </div>
     </div>
-    <section class="tiles-dounught-cart">
-        <div class="tiles">
-            @for (tileData of tilesData; track tileData) {
-                <mat-card>
+
+    <div class="tiles-container">
+        @for (dashBoardData of dashBoardDatas; track $index) {
+            @if (dashBoardData.type === 'box') {
+                <mat-card class="tile">
                     <mat-card-header>
+                        <mat-card-title><span>{{ dashBoardData.dbData[0].Column1 }}</span></mat-card-title>
                         <mat-icon>more_horiz</mat-icon>
                     </mat-card-header>
                     <mat-card-content>
-                        <mat-icon>
-                            shopping_bag
-                        </mat-icon>
-                        <h3>{{ tileData.DisplayValue   | currency:'INR' }}</h3>
+                        <mat-icon>shopping_bag</mat-icon>
+                        <h3>{{ dashBoardData.dbData[0].RsValue }}</h3>
                         <div class="details">
-                            <span class="title"> {{ tileData.DSBTitle }} </span>
-                            <span class="value">
-                                {{ tileData.RcdCount }}
-                            </span>
+                            <span class="title">{{ dashBoardData.dbData[0].Column2 }}</span>
+                            <span class="value">{{ dashBoardData.dbData[0].RcCnt }}</span>
                         </div>
                     </mat-card-content>
                 </mat-card>
             }
-        </div>
-        <div class="dounught-cart">
-            <div class="title">
-                <h3>{{ type.DSBTitle }}</h3>
-                <h5>Yearly</h5>
-            </div>
-            <canvas id="doughnutchart"></canvas>
-        </div>
-    </section>
-    <section class="line-bar-charts">
-        <mat-card class="linechart">
-            <mat-card-header>
-                <mat-card-title>
-                    {{ type.DSBTitle }}
-                </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <canvas id="linechart"></canvas>
-            </mat-card-content>
-        </mat-card>
-        <mat-card class="barchart">
-            <mat-card-header>
-                <mat-card-title>
-                    {{ type.DSBTitle }}
-                </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <canvas id="barchart"></canvas>
-            </mat-card-content>
-        </mat-card>
-    </section>
-    <div class="pie-chart-table">
-        <mat-card class="piechart">
-            <mat-card-header>
-                <mat-card-title>
-                    {{ type.DSBTitle }}
-                </mat-card-title>
-                <mat-card-subtitle>
-                    Yearly
-                </mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-                <canvas id="piechart"></canvas>
-            </mat-card-content>
-        </mat-card>
+        }
+    </div>
 
-        <mat-card class="table">
-            <mat-card-header>
-                <mat-card-title>
-                    {{ type.DSBTitle }}
-                </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div class="table-container">
-                    <table
-                        mat-table
-                        [dataSource]="dashboardTableData"
-                    >
-                        @for (column of displayColumns; track column) {
-                            <ng-container [matColumnDef]="column.toString()">
-                                <th mat-header-cell *matHeaderCellDef> {{ column }} </th>
-                                <td mat-cell *matCellDef="let element"> {{ element[column.toString()] }} </td>
-                            </ng-container>
-                        }
-                        <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayColumns;"></tr>
-                    </table>
-                </div>
-            </mat-card-content>
-        </mat-card>
+    <div class="table-graph-container">
+        @for (dashBoardData of dashBoardDatas; track $index) {
+            @if (dashBoardData.type === 'Table') {
+                <table>
+                    <thead>
+                        <tr>
+                            <th *ngFor="let col of dashBoardData.column">{{ col }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of dashBoardData.dbData['Table1']">
+                            <td *ngFor="let col of dashBoardData.column">{{ row[col.toString()] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+            @if(dashBoardData.type === "Graph") {
+                <mat-card class="graph">
+                    <mat-card-header>
+                        <h2>Graph</h2>
+                    </mat-card-header>
+                    <mat-card-content>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum laborum accusantium, labore voluptatum eveniet est itaque doloribus molestias corrupti earum iste, accusamus alias eius! Deserunt sint sapiente facere laudantium ex?
+                    </mat-card-content>
+                </mat-card>
+            }
+        }
     </div>
 </section>

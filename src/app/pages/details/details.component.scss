@@ -48,9 +48,7 @@
                 td {
                     padding: 10px;
                     border: 1px solid #ddd;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                    white-space: wrap;
                     max-width: 200px;
                 }
             }

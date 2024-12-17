@@ -4,242 +4,359 @@
     margin-top: 70px;
     padding: 20px;
 
-    .title-header {
+    .table-graph-container {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-
-        .actions {
-            display: flex;
-            align-items: center;
-
-            h2 {
-                margin: 0 15px 0 0;
-                display: block;
-                padding: 7px 25px 7px 0;
-                color: $black-secondary;
-                text-transform: uppercase;
-                font-weight: 500;
-                font-size: 1.143rem;
-            }
-
-            h5 {
-                cursor: pointer;
-            }
-        }
-    }
-
-    .tiles-dounught-cart {
-        display: flex;
-        align-items: flex-start;
+        align-items: stretch;
         flex-wrap: wrap;
         gap: 20px;
-        margin-bottom: 20px;
 
-        .tiles {
-            display: flex;
-            flex: 1;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+        table {
+            // width: 100%;
+            border-collapse: collapse;
+            flex: 2;
+        }
 
-            mat-card {
-                padding: 0 20px;
-                width: 270px;
+        th, td {
+            border: 1px solid #ccc;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        mat-card {
+            &.graph {
                 border-radius: 10px;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 background-color: #fff;
+                padding: 20px;
+                flex: 1;
 
-                mat-card-header {
-                    justify-content: flex-end;
+                .title {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
 
-                    mat-icon {
+                    h5 {
                         color: #b5b5ac;
                     }
-                }
 
-                mat-card-content {
-                    mat-icon {
-                        color: $primary;
-                        background-color: $primary-opacity;
-                        padding: 15px;
-                        border-radius: 50%;
-                    }
-
-                    h3 {
-                        font-size: 20px;
-                        margin-top: 10px;
-                        font-weight: 300;
-                        letter-spacing: 3px;
-                    }
-
-                    .details {
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-
-                        span {
-
-                            &.title {
-                                color: $black;
-                                font-weight: 600;
-                                letter-spacing: 2px;
-                                font-size: 16px;
-                            }
-
-                            &.value {
-                                color: $black-secondary;
-                                font-weight: 400;
-                                font-size: 14px;
-                                letter-spacing: 2px;
-                            }
-                        }
+                    h3, h5 {
+                        margin: 0px;
                     }
                 }
             }
-        }
-
-        .dounught-cart {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            padding: 20px;
-
-            .title {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-
-                h5 {
-                    color: #b5b5ac;
-                }
-
-                h3, h5 {
-                    margin: 0px;
-                }
-            }
-
         }
     }
 
 
-    .line-bar-charts {
+
+    .tiles-container {
         display: flex;
+        align-items: center;
         gap: 20px;
-        width: 100%;
+        flex-wrap: wrap;
         margin-bottom: 20px;
 
         mat-card {
-            width: 50%;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-        }
-    }
-
-    .pie-chart-table {
-        display: flex;
-        align-items: flex-start;
-        gap: 20px;
-        width: 100%;
-
-        mat-card {
+            padding: 0 20px;
+            width: 270px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             background-color: #fff;
 
-            &.piechart {
-                width: 30%;
+            mat-card-header {
+                justify-content: space-between;
+                align-items: center;
+
+                .mat-mdc-card-header-text {
+                    display: none;
+                }
+
+                mat-icon {
+                    color: #b5b5ac;
+                }
             }
 
-            &.table {
-                width: 70%;
+            mat-card-content {
+                mat-icon {
+                    color: $primary;
+                    background-color: $primary-opacity;
+                    padding: 15px;
+                    border-radius: 50%;
+                }
 
-                .table-container {
-                    position: relative;
-                    min-height: 200px;
-                    max-height: 350px;
-                    overflow: auto;
+                h3 {
+                    font-size: 20px;
+                    margin-top: 10px;
+                    font-weight: 300;
+                    letter-spacing: 3px;
+                }
 
-                    table.mat-mdc-table {
-                        white-space: nowrap;
-                        tr {
-                            &:nth-child(even) {
-                                background-color: #edecec9c;
-                            }
+                .details {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    span {
+
+                        &.title {
+                            color: $black;
+                            font-weight: 600;
+                            letter-spacing: 2px;
+                            font-size: 16px;
+                        }
+
+                        &.value {
+                            color: $black-secondary;
+                            font-weight: 400;
+                            font-size: 14px;
+                            letter-spacing: 2px;
                         }
                     }
                 }
             }
-
-
         }
     }
+
+    // .title-header {
+    //     display: flex;
+    //     align-items: center;
+    //     justify-content: space-between;
+    //     flex-wrap: wrap;
+
+    //     .actions {
+    //         display: flex;
+    //         align-items: center;
+
+    //         h2 {
+    //             margin: 0 15px 0 0;
+    //             display: block;
+    //             padding: 7px 25px 7px 0;
+    //             color: $black-secondary;
+    //             text-transform: uppercase;
+    //             font-weight: 500;
+    //             font-size: 1.143rem;
+    //         }
+
+    //         h5 {
+    //             cursor: pointer;
+    //         }
+    //     }
+    // }
+
+    // .tiles-dounught-cart {
+    //     display: flex;
+    //     align-items: flex-start;
+    //     flex-wrap: wrap;
+    //     gap: 20px;
+    //     margin-bottom: 20px;
+
+    //     .tiles {
+    //         display: flex;
+    //         flex: 1;
+    //         align-items: center;
+    //         gap: 20px;
+    //         flex-wrap: wrap;
+    //         margin-bottom: 20px;
+
+    //         mat-card {
+    //             padding: 0 20px;
+    //             width: 270px;
+    //             border-radius: 10px;
+    //             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    //             background-color: #fff;
+
+    //             mat-card-header {
+    //                 justify-content: flex-end;
+
+    //                 mat-icon {
+    //                     color: #b5b5ac;
+    //                 }
+    //             }
+
+    //             mat-card-content {
+    //                 mat-icon {
+    //                     color: $primary;
+    //                     background-color: $primary-opacity;
+    //                     padding: 15px;
+    //                     border-radius: 50%;
+    //                 }
+
+    //                 h3 {
+    //                     font-size: 20px;
+    //                     margin-top: 10px;
+    //                     font-weight: 300;
+    //                     letter-spacing: 3px;
+    //                 }
+
+    //                 .details {
+    //                     display: flex;
+    //                     align-items: center;
+    //                     justify-content: space-between;
+
+    //                     span {
+
+    //                         &.title {
+    //                             color: $black;
+    //                             font-weight: 600;
+    //                             letter-spacing: 2px;
+    //                             font-size: 16px;
+    //                         }
+
+    //                         &.value {
+    //                             color: $black-secondary;
+    //                             font-weight: 400;
+    //                             font-size: 14px;
+    //                             letter-spacing: 2px;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     .dounught-cart {
+    //         border-radius: 10px;
+    //         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    //         background-color: #fff;
+    //         padding: 20px;
+
+    //         .title {
+    //             display: flex;
+    //             align-items: center;
+    //             justify-content: space-between;
+
+    //             h5 {
+    //                 color: #b5b5ac;
+    //             }
+
+    //             h3, h5 {
+    //                 margin: 0px;
+    //             }
+    //         }
+
+    //     }
+    // }
+
+
+    // .line-bar-charts {
+    //     display: flex;
+    //     gap: 20px;
+    //     width: 100%;
+    //     margin-bottom: 20px;
+
+    //     mat-card {
+    //         width: 50%;
+    //         border-radius: 10px;
+    //         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    //         background-color: #fff;
+    //     }
+    // }
+
+    // .pie-chart-table {
+    //     display: flex;
+    //     align-items: flex-start;
+    //     gap: 20px;
+    //     width: 100%;
+
+    //     mat-card {
+    //         border-radius: 10px;
+    //         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    //         background-color: #fff;
+
+    //         &.piechart {
+    //             width: 30%;
+    //         }
+
+    //         &.table {
+    //             width: 70%;
+
+    //             .table-container {
+    //                 position: relative;
+    //                 min-height: 200px;
+    //                 max-height: 350px;
+    //                 overflow: auto;
+
+    //                 table.mat-mdc-table {
+    //                     white-space: nowrap;
+    //                     tr {
+    //                         &:nth-child(even) {
+    //                             background-color: #edecec9c;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+
+    //     }
+    // }
 }
 
-@media (max-width: 970px) {
-    .dashboard {
-        .tiles-dounught-cart {
-            .tiles {
-                mat-card {
-                    width: 265px;
-                }
-            }
-        }
+// @media (max-width: 970px) {
+//     .dashboard {
+//         .tiles-dounught-cart {
+//             .tiles {
+//                 mat-card {
+//                     width: 265px;
+//                 }
+//             }
+//         }
 
-        .line-bar-charts {
-            flex-direction: column;
-            width: 100%;
+//         .line-bar-charts {
+//             flex-direction: column;
+//             width: 100%;
 
-            .linechart, .barchart {
-                width: 100%;
-            }
-        }
+//             .linechart, .barchart {
+//                 width: 100%;
+//             }
+//         }
 
-        .pie-chart-table {
-            flex-direction: column-reverse;
+//         .pie-chart-table {
+//             flex-direction: column-reverse;
 
-            mat-card.table {
-                width: 100%;
-            }
-        }
-    }
-}
+//             mat-card.table {
+//                 width: 100%;
+//             }
+//         }
+//     }
+// }
 
-@media (max-width: 600px) {
-    .dashboard {
-        .tiles-dounught-cart {
-            .tiles {
-                mat-card {
-                    width: 260px;
-                }
-            }
-        }
-    }
-}
+// @media (max-width: 600px) {
+//     .dashboard {
+//         .tiles-dounught-cart {
+//             .tiles {
+//                 mat-card {
+//                     width: 260px;
+//                 }
+//             }
+//         }
+//     }
+// }
 
-@media (max-width: 425px)  {
-    .dashboard {
-        .tiles-dounught-cart {
-            margin-bottom: 20px;
+// @media (max-width: 425px)  {
+//     .dashboard {
+//         .tiles-dounught-cart {
+//             margin-bottom: 20px;
 
-            .tiles {
-                mat-card {
-                    width: 100%;
-                }
-            }
+//             .tiles {
+//                 mat-card {
+//                     width: 100%;
+//                 }
+//             }
 
-            .dounught-cart {
-                width: 100%;
-            }
-        }
+//             .dounught-cart {
+//                 width: 100%;
+//             }
+//         }
 
-        .pie-chart-table {
-            mat-card.piechart {
-                width: 100%;
-            }
-        }
-    }
-}
+//         .pie-chart-table {
+//             mat-card.piechart {
+//                 width: 100%;
+//             }
+//         }
+//     }
+// }

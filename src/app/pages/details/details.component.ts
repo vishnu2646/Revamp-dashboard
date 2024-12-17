@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { lastValueFrom, Subscription } from 'rxjs';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +17,7 @@ import { UserserviceService } from '../../services/user/userservice.service';
 import { ApiService } from '../../services/api/api.service';
 import { LoaderComponent } from "../../components/loader/loader.component";
 import { IAttachments, IComments, IHistory, IReport, IUser } from '../../types/types';
+import { ExportService } from '../../services/export/export.service';
 
 @Component({
     selector: 'app-details',
@@ -46,7 +47,9 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
     private seletcedDataSubscription: Subscription | undefined;
 
-    private sanitizer = inject(DomSanitizer)
+    private sanitizer = inject(DomSanitizer);
+
+    private exportService = inject(ExportService);
 
     private typeStr: String = '';
 
@@ -177,12 +180,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
             }
             try {
                 this.apiService.getReportService(params).subscribe((data: any) => {
-                    const parsedData = data.GetHtmlReportString
-                    const byPasedData = this.sanitizer.bypassSecurityTrustHtml(parsedData);
-                    this.printContent = byPasedData;
-                    if(this.printContent) {
-                        this.handlePrint();
-                    }
+                    this.exportService.handleShowPreview(data.GetHtmlReportString);
                 })
             } catch (error) {
                 console.log('error:', error)
@@ -200,19 +198,20 @@ export class DetailsComponent implements OnInit, OnDestroy {
         window.open(path, 'download');
     }
 
-    public handlePrint() {
-        const printWindow = window.open('', '', 'height=600,width=800');
-        printWindow?.document.write(this.printContent);
-        printWindow?.document.close();
-        printWindow?.print();
-    }
+    // public handlePrint() {
+    //     const printWindow = window.open('', '', 'height=600,width=800');
+    //     console.log(this.printContent);
+    //     printWindow?.document.write(this.printContent['changingThisBreaksApplicationSecurity']);
+    //     printWindow?.document.close();
+    //     printWindow?.print();
+    // }
 
     private async getIndividualDetails(): Promise<void> {
         const { idData, data, typeStr } = this.recivedData;
         this.typeStr = typeStr
         this.loading = !this.loading;
         const primeId = this.recivedData.primeid || data[idData.primeId];
-        const mdlId =  this.recivedData.mdlid || idData?.mdlId;
+        const mdlId =  this.recivedData.mdlid || idData?.mdlId || this.recivedData.Module;
         if(this.recivedData) {
             try {
                 const responseData = await lastValueFrom(this.apiService.getIndividualDataService(mdlId, primeId ,this.userData.UsrId));

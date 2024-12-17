@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ngxCsv } from 'ngx-csv';
 import * as XLSX from 'xlsx';
 
@@ -6,6 +7,10 @@ import * as XLSX from 'xlsx';
     providedIn: 'root'
 })
 export class ExportService {
+
+    private sanitizer = inject(DomSanitizer);
+
+    private printContent: any;
 
     public handleDownLoad() {
         window.location.href='http://example.com/myuri/report?param=x';
@@ -51,5 +56,20 @@ export class ExportService {
             headers: header,
         };
         new ngxCsv(data, fileName.toString(), options);
+    }
+
+    public handleShowPreview(data: any) {
+        this.printContent = this.sanitizer.bypassSecurityTrustHtml(data);
+        if(this.printContent) {
+            this.handlePrint();
+        }
+    }
+
+    public handlePrint() {
+        const printWindow = window.open('', '', 'height=600,width=800');
+        console.log(this.printContent);
+        printWindow?.document.write(this.printContent['changingThisBreaksApplicationSecurity']);
+        printWindow?.document.close();
+        printWindow?.print();
     }
 }

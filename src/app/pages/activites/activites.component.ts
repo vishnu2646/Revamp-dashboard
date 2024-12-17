@@ -90,6 +90,7 @@ export class ActivitesComponent {
         this.activatedRoute.queryParams.subscribe(params => {
             this.module = params['module'];
             this.activity = params['activity'];
+            console.log(this.activity);
         });
 
         if(this.router.url.includes("activites")) {

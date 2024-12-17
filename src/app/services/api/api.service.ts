@@ -32,9 +32,9 @@ export class ApiService {
         return this.httpClient.get(`${this.baseUrl}/GetAspSessionId?UsrId=${userId}&Authcode=${authCode}&Logid=${logId}&databaseKey=${key}`)
     }
 
-    public getDashboardIndividualDataService(id: number,user: String): Observable<any> {
+    public getDashboardIndividualDataService(id: number, user: String, type: String): Observable<any> {
         const key = this.cookieService.get('key');
-        return this.httpClient.get(`${this.baseUrl}/DashboardIndividualData?User=${user}&DsbId=${id}&databaseKey=${key}`);
+        return this.httpClient.get(`${this.baseUrl}/DashboardIndividualDataRev?dcId=${id}&User=${user}&DBType=${type}&databaseKey=${key}`);
     }
 
     public getGetDashboardModelService(user: String): Observable<any> {

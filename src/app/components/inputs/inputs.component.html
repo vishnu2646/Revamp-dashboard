@@ -40,8 +40,9 @@
                 </mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-                <button mat-raised-button color="primary" style="margin-right: 10px;" (click)="handleDownloadFile('pdf')">{{ advanceReport?.ReportTitle }} PDF</button>
-                <button mat-raised-button color="accent" (click)="handleDownloadFile('excel')">{{ advanceReport?.ReportTitle }} EXCEL</button>
+                <button mat-raised-button color="primary" style="margin-right: 10px;" (click)="handleDownloadFile('pdf')" *ngIf="advanceReport?.RevPDFPath">{{ advanceReport?.ReportTitle }} PDF</button>
+                <button mat-raised-button color="accent" style="margin-right: 10px;" (click)="handleDownloadFile('excel')" *ngIf="advanceReport?.RevXlPath">{{ advanceReport?.ReportTitle }} EXCEL</button>
+                <button mat-raised-button color="warn" (click)="handlePreview(advanceReport)" *ngIf="advanceReport?.HTMlString !== 'N/A'">Report Preview</button>
             </mat-card-content>
         </mat-card>
     </div>

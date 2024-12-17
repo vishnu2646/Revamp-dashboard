@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IReport } from '../../types/types';
 import { lastValueFrom } from 'rxjs';
@@ -7,16 +7,16 @@ import { mapRelatedTable } from '../../utils/utils';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { LoaderComponent } from '../loader/loader.component';
-import { HttpClient } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { ExportService } from '../../services/export/export.service';
 
 @Component({
     selector: 'app-inputs',
@@ -43,9 +43,15 @@ export class InputsComponent implements OnInit, OnChanges {
 
     private apiService = inject(ApiService);
 
+    private exportService = inject(ExportService);
+
+    private cd = inject(ChangeDetectorRef);
+
     private userData: any;
 
     private _selectedReport: IReport = {} as IReport;
+
+    private excludeTables = ['Table', 'Table1', 'Table2'];
 
     public tableCount = 0;
 
@@ -61,8 +67,6 @@ export class InputsComponent implements OnInit, OnChanges {
 
     public data: any;
 
-    private httpClient = inject(HttpClient);
-
     @Input()
     public report: IReport = {} as IReport;
 
@@ -71,7 +75,6 @@ export class InputsComponent implements OnInit, OnChanges {
         { ParamName: 'endDate', ControlType: 'DateTime', ParamTitle: 'End Date', defaultValue: new Date() },
     ];
 
-    private excludeTables = ['Table', 'Table1', 'Table2'];
 
     public ngOnInit(): void {
         this.handleGetUserData();
@@ -170,10 +173,12 @@ export class InputsComponent implements OnInit, OnChanges {
                     try {
                         const responseData: any = await lastValueFrom(this.apiService.getAdvanceReportExcelGenerateService(printData));
                         if(responseData && responseData.GetExcelDocument) {
+                            this.isReportLoading = !this.isReportLoading;
                             const { Table, Table2 } = responseData.GetExcelDocument;
                             this.advanceReport = Table[0];
                             this.tableCount = Table2.length;
                             this.generateTables(responseData);
+                            this.cd.detectChanges();
                         }
                     } catch (error) {
                         console.log(error);
@@ -181,8 +186,10 @@ export class InputsComponent implements OnInit, OnChanges {
                 }
             } catch (error) {
                 console.error(error);
+                this.isReportLoading = !this.isReportLoading;
+            } finally {
+                this.formData = {};
             }
-            this.isReportLoading = !this.isReportLoading;
         }
     }
 
@@ -196,7 +203,6 @@ export class InputsComponent implements OnInit, OnChanges {
             });
 
         this.tablesToGenerate = tablesFromData;
-        console.log(`Generating`, this.tablesToGenerate);
     }
 
     public handleDownloadFile(type: 'pdf' | 'excel'): void {
@@ -207,6 +213,11 @@ export class InputsComponent implements OnInit, OnChanges {
             path = this.advanceReport.RevXlPath
         }
         window.open(path, 'download');
+    }
+
+
+    public handlePreview(data: any) {
+        this.exportService.handleShowPreview(data.HTMlString);
     }
 
     private formatDate(date: any): string {
