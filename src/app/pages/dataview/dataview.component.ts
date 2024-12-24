@@ -18,7 +18,7 @@ import { ModuleRightsService } from '../../services/module/module-rights.service
 import { BottomSheetComponent } from '../../components/bottom-sheet/bottom-sheet.component';
 import { TableComponent } from '../../components/table/table.component';
 import { ActivitesComponent } from "../activites/activites.component";
-import { IActivity, IUser } from '../../types/types';
+import { IActivity, IUser, IUserSession } from '../../types/types';
 
 @Component({
     selector: 'app-dataview',
@@ -61,7 +61,7 @@ export class DataviewComponent implements OnInit, OnDestroy {
         typeStr: ""
     };
 
-    public userData: any;
+    public userData: IUserSession = {} as IUserSession;
 
     public module: String = '';
 
@@ -172,7 +172,7 @@ export class DataviewComponent implements OnInit, OnDestroy {
     }
 
     public handleGetUserData(): void {
-        const data: IUser = this.userService.getUserData() as IUser;
+        const data: IUserSession = this.userService.getUserData() as IUserSession;
         if(data) {
             this.userData = data;
         }

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                padding: 20px;
+            }
+
+            .title {
+                margin-top: 20px;
+            }
+
+            .report-cards {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                flex-wrap: wrap;
+                margin-top: 20px;
+            }
+
+            .report-cards .card {
+                width: 250px;
+                height: 100px;
+            }
+
+            .content-title {
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body onload="loadData()">
+        <h1 class="mb-4 text-center" style="text-align: center;">Daily DashBoard</h1>
+        <button type="button" class="btn btn-success" id="today-btn" onclick="toggleData('Today')">Today</button>
+        <button type="button" class="btn btn-outline-success" id="yesterday-btn" onclick="toggleData('Yesterday')">Yesterday</button>
+
+        <h2 class="title"></h2>
+        <div class="report-cards"></div>
+
+        <h2 class="content-title"></h2>
+        <div class="content table-responsive">
+            <table class="table table-striped table-hover"></table>
+        </div>
+
+        <script>
+            // Card data
+            const table3 = [{
+                "ActionDt":20241215,
+                "ActionDate":"15-12-2024",
+                "Sales":603372,
+                "Purchase":855206,
+                "Receipt":1201452,
+                "Payments":0,
+                "Expense":247824,
+                "SalCount":20,
+                "PurCount":3,
+                "RctCount":34,
+                "PayCnt":0,
+                "ExpCount":20
+            }];
+            const table15 = [{"ActionDt":20241214,"ActionDate":"14-12-2024","Sales":2532859,"Purchase":1677004,"Receipt":1385944,"Payments":0,"Expense":90124,"SalCount":160,"PurCount":5,"RctCount":65,"PayCnt":0,"ExpCount":35}];
+
+            // Table Datas
+            const table10 = [{"Slno":"1","partno":"19","NoOfBills":16,"SupplyQty":301,"EmptyQty":281,"Subtotal":433432,"taxValue":78018,"InvValue":511450,"InvDate":"15-12-2024"},{"Slno":"2","partno":"47.5","NoOfBills":3,"SupplyQty":21,"EmptyQty":24,"Subtotal":77036,"taxValue":13866,"InvValue":90902,"InvDate":"15-12-2024"},{"Slno":"3","partno":"5","NoOfBills":1,"SupplyQty":2,"EmptyQty":0,"Subtotal":864,"taxValue":156,"InvValue":1020,"InvDate":"15-12-2024"},{"Slno":"","partno":"\u003cB\u003eTotal\u003c/B\u003e","NoOfBills":20,"SupplyQty":324,"EmptyQty":305,"Subtotal":511332,"taxValue":92040,"InvValue":603372,"InvDate":""}];
+            const table22 = [{"Slno":"1","partno":"19","NoOfBills":149,"SupplyQty":1314,"EmptyQty":1019,"Subtotal":1953731,"taxValue":351672,"InvValue":2305403,"InvDate":"14-12-2024"},{"Slno":"2","partno":"47.5","NoOfBills":6,"SupplyQty":51,"EmptyQty":52,"Subtotal":184814,"taxValue":33267,"InvValue":218081,"InvDate":"14-12-2024"},{"Slno":"3","partno":"5","NoOfBills":5,"SupplyQty":19,"EmptyQty":18,"Subtotal":7945,"taxValue":1430,"InvValue":9375,"InvDate":"14-12-2024"},{"Slno":"","partno":"\u003cB\u003eTotal\u003c/B\u003e","NoOfBills":160,"SupplyQty":1384,"EmptyQty":1089,"Subtotal":2146491,"taxValue":386368,"InvValue":2532859,"InvDate":""}];
+
+            const resetCardData = () => {
+                const reportCardsDiv = document.querySelector(".report-cards");
+                reportCardsDiv.innerHTML = '';
+            }
+
+            const resetTableData = () => {
+                const resetTableDiv = document.querySelector(".content table");
+                resetTableDiv.innerHTML = '';
+            }
+
+            const createCard = (title, count, cardTitle) => {
+                const reportCardsDiv = document.querySelector(".report-cards");
+
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+
+                const cardHeader = document.createElement('div');
+                cardHeader.classList.add('card-header');
+                cardHeader.classList.add('bg-primary');
+                cardHeader.classList.add('text-white');
+                cardHeader.textContent = `${cardTitle}`;
+
+                const cardBody = document.createElement('div');
+                cardBody.classList.add("card-body");
+                cardBody.textContent = `Total ${cardTitle}: ${title} / ${count}`;
+
+                cardDiv.appendChild(cardHeader);
+                cardDiv.appendChild(cardBody);
+
+                reportCardsDiv.appendChild(cardDiv);
+            }
+
+            const populateCards = (day) => {
+                resetCardData();
+
+                const data = day === 'Yesterday' ? table15[0] : table3[0];
+
+                createCard(data.Sales, data.SalCount, 'Sales');
+                createCard(data.Purchase, data.PurCount, 'Purchase');
+                createCard(data.Receipt, data.RctCount, 'Receipt');
+                createCard(data.Payments, data.PayCnt, 'Payments');
+                createCard(data.Expense, data.ExpCount, 'Expense');
+            }
+
+            const generateTable = (table, day) => {
+                const data = day === 'Yesterday' ? table22 : table10;
+                const tBody = table.createTBody();
+                for(let element  of data) {
+                    let row = tBody.insertRow();
+                    for(key in element) {
+                        let cell = row.insertCell();
+                        let text = document.createTextNode(element[key]);
+                        cell.appendChild(text);
+                    }
+                }
+            }
+
+            const generateTableHead = (table, data, day) => {
+                const thead = table.createTHead();
+                const row = thead.insertRow();
+                for(let key of data) {
+                    const th = document.createElement("th");
+                    const text = document.createTextNode(key);
+                    th.appendChild(text);
+                    row.appendChild(th);
+                }
+
+                generateTable(table, day);
+            }
+
+            const populateTable = (day) => {
+                resetTableData();
+                const tableElement = document.querySelector('.content table');
+                const columns = day === 'Yesterday' ? Object.keys(table22[0]) : Object.keys(table10[0]);
+                generateTableHead(tableElement, columns, day);
+            }
+
+            const toggleData = (day) => {
+                if(day === 'Today') {
+                    document.querySelector(".title").textContent = 'Todays Dashboard';
+                    document.querySelector(".content-title").textContent = 'Todays Summary';
+                    populateCards('Today');
+                    populateTable('Today');
+                    document.querySelector('#today-btn').classList.replace('btn-outline-success', 'btn-success');
+                    document.querySelector('#yesterday-btn').classList.replace('btn-success', 'btn-outline-success');
+                } else if (day === 'Yesterday') {
+                    document.querySelector(".title").textContent = 'Yesterdays Dashboard';
+                    document.querySelector(".content-title").textContent = 'Yesterdays Summary';
+                    populateCards('Yesterday');
+                    populateTable('Yesterday');
+                    document.querySelector('#yesterday-btn').classList.replace('btn-outline-success', 'btn-success');
+                    document.querySelector('#today-btn').classList.replace('btn-success', 'btn-outline-success');
+                } else{
+                    document.querySelector(".title").textContent = 'Todays Dashboard';
+                    document.querySelector(".content-title").textContent = 'Todays Summary';
+                    populateCards('Today');
+                    populateTable('Today');
+                    document.querySelector('#today-btn').classList.replace('btn-outline-success', 'btn-success');
+                    document.querySelector('#yesterday-btn').classList.replace('btn-success', 'btn-outline-success');
+                }
+            }
+
+            const loadData = () => {
+                populateCards('Today');
+                document.querySelector(".title").textContent = 'Todays Dashboard';
+                document.querySelector(".content-title").textContent = 'Todays Summary';
+                populateTable('Today');
+            };
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>

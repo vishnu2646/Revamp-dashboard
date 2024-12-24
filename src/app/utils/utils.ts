@@ -13,7 +13,6 @@ export const isDefined = (data: any) => {
     return typeof data !== 'undefined';
 }
 
-
 export const mapRelatedTable = (data: any) => {
 
     const table1 = data.Table1;
@@ -56,10 +55,3 @@ export const mapRelatedTable = (data: any) => {
 
     return data;
 }
-
-
-// export function groupByData<T>(collection:T[],key: keyof T){
-//     const groupedResult = Map.groupBy(collection, key);
-
-//     return groupedResult
-// }

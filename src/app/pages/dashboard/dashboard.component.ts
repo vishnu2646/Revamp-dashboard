@@ -1,29 +1,28 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, inject, OnDestroy, OnInit, Pipe } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, TemplateRef } from '@angular/core';
 
 import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { ITilesData, IUser } from '../../types/types';
+import { IDashboardDropDown, IDashboardModal, IUser, IUserSession } from '../../types/types';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { ApiService } from '../../services/api/api.service';
-import { forkJoin, lastValueFrom, map, Subscription } from 'rxjs';
 import { Chart, registerables } from 'chart.js';
-import { LoaderComponent } from '../../components/loader/loader.component';
-import { MatOptionSelectionChange } from '@angular/material/core';
-import { ActivationDialogComponent } from '../../components/activation-dialog/activation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { ExportService } from '../../services/export/export.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { DialogComponent } from '../../components/dialog/dialog.component';
+import { LoaderComponent } from "../../components/loader/loader.component";
 
+Chart.register(...registerables);
 
-Chart.register(...registerables)
 @Component({
     selector: 'app-dashboard',
     standalone: true,
@@ -39,111 +38,346 @@ Chart.register(...registerables)
         MatSelectModule,
         MatTableModule,
         MatSortModule,
+        MatSelectModule,
+        MatTooltipModule,
+        MatDialogModule,
+        LoaderComponent
     ],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
     private userService = inject(UserserviceService);
 
     private apiService = inject(ApiService);
 
-    private refreshSubscription: Subscription | null = null;
+    private exportService = inject(ExportService);
+
+    private dialog = inject(MatDialog);
+
+    public dialogRef: any;
+
+    private selectedModelId: number = 0;
+
+    private cd = inject(ChangeDetectorRef);
+
+    public graphs = {
+        bar: false,
+        line: false,
+        pie: false,
+        doughnut: false
+    }
 
     public key = '';
 
-    public userData: any;
+    public userData: IUserSession = {} as IUserSession;
 
-    public dbModel: any;
+    public dropDownData: IDashboardDropDown[] = [];
 
-    public dashBoardDatas: {dbData: any, id: number, type: String, column: String[]}[] = [];
+    public dbModel: IDashboardModal[] = [];
+
+    public cardDatas: any[] = [];
+
+    public tableDatas: any[] = [];
+
+    public column: string[] = [];
+
+    public chartDatas: any;
+
+    public chart: any;
+
+    public remaningTable: any;
+
+    public isReportLoaded: boolean = false;
+
+    public isDashboardLoading: boolean = false;
+
+    public chartTitle: String = '';
+
+    public chartSubTitle: String = '';
+
+    public tableNames: any;
+
+    public report = {
+        xlPath: '',
+        pdfPath: '',
+        htmlString: 'N/A',
+        title: ''
+    };
 
     public ngOnInit() {
         this.handleGetUserData();
-        this.handleGetDashboardData();
+        this.handleGetDropDownList();
+    }
 
-        this.refreshSubscription = this.userService.refreshSubject$.subscribe(() => {
-            // this.handleSelectionOption(this.selectedTile);
+    public handleGetDropDownList() {
+        this.apiService.getGetDashboardSetListService(this.userData.UsrName).subscribe({
+            next: (resposne) => {
+                this.dropDownData = resposne.DashboardSetList.Table;
+                const firstData = this.dropDownData[0];
+                if(firstData && firstData.SetId) {
+                    this.handleSelectionChange({ value: firstData.SetId } as MatSelectChange);
+                }
+            },
+            error: (err) => {
+                console.log(err);
+            },
+            complete: () => {
+                console.log("Completed");
+            }
+        })
+    }
+
+    public handleSelectionChange(event: MatSelectChange) {
+        if(event) {
+            this.selectedModelId = event.value;
+            this.cardDatas = [];
+            this.chartDatas = {};
+            this.remaningTable = {};
+            this.tableNames = [];
+            this.cd.detectChanges();
+            this.handleGetDashboardData(event.value);
+        }
+    }
+
+    public getTableNames() {
+        if(this.remaningTable) {
+            return Object.keys(this.remaningTable);
+        } else {
+            return [];
+        }
+    }
+
+    public getColumns(table: any) {
+        return Object.keys(this.remaningTable[table][0])
+    }
+
+    public getVaues(row: any) {
+        return Object.values(row)
+    }
+
+    public handleGetReport(data: any) {
+        this.isReportLoaded = !this.isReportLoaded;
+
+        this.apiService.getDashBoardReportService(data.APiUrl).subscribe({
+            next: (resposne) => {
+                this.report.xlPath = resposne.GetExcelDocument[0].RevXlPath;
+                this.report.pdfPath = resposne.GetExcelDocument[0].RevPDFPath;
+                this.report.htmlString = resposne.GetExcelDocument[0].HTMlString;
+                this.report.title = resposne.GetExcelDocument[0].ReportTitle;
+                this.cd.detectChanges();
+            },
+            error: (err) => {
+                console.log(err);
+                this.isReportLoaded = !this.isReportLoaded;
+            },
+            complete: () => {
+                this.isReportLoaded = !this.isReportLoaded;
+            }
         });
     }
 
-    public ngOnDestroy(): void {
-        if(this.refreshSubscription) {
-            this.refreshSubscription.unsubscribe();
+    public handleDownloadFile(type: 'pdf' | 'excel'): void {
+        let path;
+        if(type === 'pdf') {
+            path = this.report.pdfPath;
+        } else if(type === 'excel') {
+            path = this.report.xlPath
         }
+        window.open(path, 'download');
     }
 
-    private async handleGetDashboardData() {
-        try {
-            const responseData: any = await lastValueFrom(this.apiService.getGetDashboardModelService(this.userData.UsrName));
-            if(responseData && responseData['GetDashboardModel']) {
-                this.dbModel = responseData['GetDashboardModel'].Table;
+    public handlePreview() {
+        this.exportService.handleShowPreview(this.report.htmlString);
+    }
+
+    private async handleGetDashboardData(value: any) {
+        this.isDashboardLoading = !this.isDashboardLoading;
+
+        this.apiService.getGetDashboardModelService(this.userData.UsrName, value).subscribe({
+            next: (response) => {
+                this.dbModel = response.GetDashboardModel.Table;
                 if(this.dbModel.length > 0) {
-                    this.handleDisplayDashboardData();
+                    this.handleDisplayDashboardData(value);
+                } else {
+                    // No data scenario: Reset UI components
+                    this.cardDatas = [];
+                    this.chartDatas = {};
+                    this.remaningTable = {};
+                    this.tableNames = [];
                 }
+            },
+            error: (error) => {
+                console.log(error);
+                this.isDashboardLoading = !this.isDashboardLoading;
+            },
+            complete: () => {
+                console.log('completed');
+                this.isDashboardLoading = !this.isDashboardLoading;
             }
-        } catch (error) {
-            console.log(error);
-        }
+        })
     }
 
-    private handleDisplayDashboardData() {
+    private handleDisplayDashboardData(value: number) {
         try {
-            const requests = this.dbModel.map((data: any, index: number) =>
-                this.apiService.getDashboardIndividualDataService(data.DCId, this.userData.UsrName, data.Model).pipe(
-                    map(response => ({
-                        id: index + 1,
-                        type: data.Model,
-                        dbData: data.Model === 'box' ? response['GetDashboardModel'].Table : response['GetDashboardModel'] || [],
-                        column: response['GetDashboardModel'].Table1 && response['GetDashboardModel'].Table1[0] ? Object.keys(response['GetDashboardModel'].Table1[0]) : [],
-                    }))
-                )
-            );
-
-            forkJoin(requests).subscribe((results: any) => {
-                this.dashBoardDatas = results;
-                console.log(this.dashBoardDatas);
-            });
+            this.apiService.getDashboardIndividualDataService(value, this.userData.UsrName).subscribe({
+                next: (response) => {
+                    const { Table, Table1, ...tableDatas }  = response.GetDashboardModel;
+                    this.cd.detectChanges();
+                    this.cardDatas = Table || [];
+                    this.chartDatas = Table1 ? Object.groupBy(Table1, ({ GraphType }: any) => GraphType) : {};
+                    this.chart = this.getChartTypes();
+                    this.formatDataForChart();
+                    this.remaningTable = tableDatas || {};
+                    this.tableNames = this.getTableNames();
+                },
+                error: (error) => {
+                    console.log(error);
+                },
+                complete: () => {
+                    this.cd.detectChanges();
+                }
+            })
         } catch (error) {
             console.log(error);
         }
     }
 
-    // private renderChart() {
-    //     const values: number[] | String[] = [];
-    //     const labels: String[] = [];
+    public  getChartTypes(): any[] {
+        const chartTypes = [];
+        if (this.chartDatas?.line) {
+            chartTypes.push({
+                type: 'line',
+                APiUrl: this.chartDatas.line[0].APiUrl,
+            });
+        };
 
-    //     this.chartData.forEach((item: any) => {
-    //         labels.push(item['Xlabel']);
-    //         values.push(item['Yvalues']);
-    //     });
+        if (this.chartDatas?.doughnut) {
+            chartTypes.push({
+                type: 'doughnut',
+                APiUrl: this.chartDatas.doughnut[0].APiUrl,
+            });
+        };
 
-    //     this.createChart("bar", labels, values, 'barchart');
-    //     this.createChart("pie", labels, values, 'piechart');
-    //     this.createChart("doughnut", labels, values, 'doughnutchart');
-    //     this.createChart("line", labels, values, 'linechart');
-    // }
+        if (this.chartDatas?.pie) {
+            chartTypes.push({
+                type: 'pie',
+                APiUrl: this.chartDatas.pie[0].APiUrl
+            });
+        };
+
+        if (this.chartDatas?.bar) {
+            chartTypes.push({
+                type: 'bar',
+                APiUrl: this.chartDatas.bar[0].APiUrl
+            });
+        };
+
+        return chartTypes;
+    }
+
+    public openDialog(content: TemplateRef<any>, actions: TemplateRef<any>, data: any) {
+        this.dialogRef = this.dialog.open(DialogComponent, {
+            data: {
+                title: 'Reports',
+            }
+        });
+
+        const dialogInstance = this.dialogRef.componentInstance;
+        dialogInstance.content = content;
+        dialogInstance.actions = actions;
+        this.handleGetReport(data);
+    }
+
+    public handleCloseDialog() {
+        this.report = {
+            xlPath: '',
+            pdfPath: '',
+            htmlString: 'N/A',
+            title: ''
+        }
+        this.cd.detectChanges();
+        this.dialog.closeAll();
+    }
+
+    public handleExport(type: String, data: any[], table: String) {
+        const columns = this.getColumns(table);
+        let title;
+        if(data[0].Title && data[0].SubTitle) {
+            title = data[0].Title + '-' + data[0].SubTitle;
+        } else {
+            title = 'Data'
+        }
+        if(type === 'xlsx') {
+            this.exportService.handleExportService('xlsx', data, columns, title)
+        } else if(type === 'csv') {
+            this.exportService.handleExportService('csv', data, columns, title)
+        }
+    }
+
+    private formatDataForChart(): void {
+        const { line, doughnut, bar, pie} = this.chartDatas;
+        if (line) {
+            this.chartTitle = line[0].Title;
+            this.chartSubTitle = line[0].SubTitle;
+            this.renderChart(line, 'line');
+        }
+
+        if (doughnut) {
+            this.chartTitle = doughnut[0].Title;
+            this.chartSubTitle = doughnut[0].SubTitle;
+            this.renderChart(doughnut, 'doughnut');
+        }
+
+        if (bar) {
+            this.chartTitle = bar[0].Title;
+            this.chartSubTitle = bar[0].SubTitle;
+            this.renderChart(bar, 'bar');
+        }
+
+        if (pie) {
+            this.chartTitle = pie[0].Title;
+            this.chartSubTitle = pie[0].SubTitle;
+            this.renderChart(pie, 'pie');
+        }
+    }
+
+    private renderChart(chartData: any, type: string) {
+
+        const values: number[] | String[] = [];
+        const labels: String[] = [];
+        const label = chartData[0].labelTitle;
+
+        chartData?.forEach((item: any) => {
+            labels.push(item['Xaxis']);
+            values.push(item['Yaxis']);
+        });
+
+        this.cd.detectChanges();
+
+        this.createChart(type, labels, values, type + "Chart", label);
+    }
 
     private handleGetUserData() {
-        const data: IUser = this.userService.getUserData() as IUser;
-        if(data) {
-            this.userData = data;
+        const data: IUserSession | String = this.userService.getUserData();
+        if(typeof data !== 'string') {
+            this.userData = data as IUserSession;
         }
     }
 
-    private createChart(type: any, label: String[], values: number[] | String[], chartId: string) {
+    private async createChart(type: any, label: String[], values: number[] | String[], chartId: string, chartLabel: string) {
         const existingChart = Chart.getChart(chartId);
 
         if (existingChart) {
             existingChart.destroy();
         }
 
-        new Chart(chartId, {
+        await new Chart(chartId, {
             type: type,
             data: {
                 labels: label,
                 datasets: [{
-                    label: "Amount",
+                    label: chartLabel,
                     data: values,
                     fill: {
                         target: 'origin',
@@ -171,15 +405,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
                         "rgb(253, 204, 229)",
                         "rgb(139, 211, 199)"
                     ],
+                    borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
+                indexAxis: type === 'bar' ? 'y' : 'x',
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    }
+                }
             }
-        })
-    }
-
-    private sortTilesData(data: ITilesData[]) {
-        // this.tilesData = data.sort((a, b) => a.Priority - b.Priority);
+        });
     }
 }

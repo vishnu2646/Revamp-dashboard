@@ -16,8 +16,8 @@
                         <div>
                             <ul>
                                 @for (child of groupData[option.toString()]; track $index) {
-                                    <li (click)="handleNavigate(child, false); drawer.toggle();" [class.active]="child.MdlDisplayname === selectedNav?.MdlDisplayname">
-                                        {{ child.MdlDisplayname }}
+                                    <li (click)="handleNavigate(child, false); drawer.toggle();" [class.active]="child['MdlDisplayname'] === selectedNav?.MdlDisplayname">
+                                        {{ child['MdlDisplayname'] }}
                                     </li>
                                 }
                             </ul>

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { UserserviceService } from '../../services/user/userservice.service';
-import { IReport } from '../../types/types';
+import { IAdvanceReport, IReport, IUserSession } from '../../types/types';
 import { lastValueFrom } from 'rxjs';
 import { ApiService } from '../../services/api/api.service';
 import { mapRelatedTable } from '../../utils/utils';
@@ -38,7 +38,7 @@ import { ExportService } from '../../services/export/export.service';
     templateUrl: './inputs.component.html',
     styleUrl: './inputs.component.scss'
 })
-export class InputsComponent implements OnInit, OnChanges {
+export class InputsComponent implements OnChanges {
     private userService = inject(UserserviceService);
 
     private apiService = inject(ApiService);
@@ -47,7 +47,7 @@ export class InputsComponent implements OnInit, OnChanges {
 
     private cd = inject(ChangeDetectorRef);
 
-    private userData: any;
+    private userData: IUserSession = {} as IUserSession;
 
     private _selectedReport: IReport = {} as IReport;
 
@@ -61,11 +61,13 @@ export class InputsComponent implements OnInit, OnChanges {
 
     public isReportLoading = false;
 
-    public advanceReport: any;
+    public advanceReport: IAdvanceReport = {} as IAdvanceReport;
 
     public tablesToGenerate: any[] = [];
 
-    public data: any;
+    public get isAdvanceReportValid(): boolean {
+        return this.advanceReport && Object.keys(this.advanceReport).length > 0;
+    }
 
     @Input()
     public report: IReport = {} as IReport;
@@ -75,8 +77,7 @@ export class InputsComponent implements OnInit, OnChanges {
         { ParamName: 'endDate', ControlType: 'DateTime', ParamTitle: 'End Date', defaultValue: new Date() },
     ];
 
-
-    public ngOnInit(): void {
+    constructor() {
         this.handleGetUserData();
     }
 
@@ -88,14 +89,14 @@ export class InputsComponent implements OnInit, OnChanges {
     }
 
     public handleGetUserData() {
-        const data: any = this.userService.getUserData();
-        if(data) {
-            this.userData = data;
+        const data = this.userService.getUserData();
+        if(typeof data !== 'string') {
+            this.userData = data as IUserSession;
         }
     }
 
     public async generateInputs(): Promise<void> {
-        if(this._selectedReport && this.userData) {
+        if(Object.keys(this._selectedReport).length > 0 && this.userData) {
             try {
                 const responseData = await lastValueFrom(this.apiService.getReportFieldsData(this.userData?.UsrName, this._selectedReport.Rptid));
                 this.inputFields = responseData.GetRefreshData['Table1'];
@@ -206,13 +207,13 @@ export class InputsComponent implements OnInit, OnChanges {
     }
 
     public handleDownloadFile(type: 'pdf' | 'excel'): void {
-        let path;
+        let path: String = '';
         if(type === 'pdf') {
             path = this.advanceReport.RevPDFPath;
         } else if(type === 'excel') {
             path = this.advanceReport.RevXlPath
         }
-        window.open(path, 'download');
+        window.open(path.toString(), 'download');
     }
 
 

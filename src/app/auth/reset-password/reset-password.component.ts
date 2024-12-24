@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
-import { IUser } from '../../types/types';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-reset-password',
@@ -17,7 +17,8 @@ import { IUser } from '../../types/types';
         MatInputModule,
         MatFormFieldModule,
         MatButtonModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        MatIconModule
     ],
     templateUrl: './reset-password.component.html',
     styleUrl: './reset-password.component.scss'
@@ -31,6 +32,8 @@ export class ResetPasswordComponent implements OnInit {
     private isActive = false;
 
     private userData: any;
+
+    public viewPassword: boolean = false;
 
     public userInfo = {
         username: '',
@@ -55,15 +58,10 @@ export class ResetPasswordComponent implements OnInit {
             if(responseData && responseData['CheckResetPwdApi']) {
                 const table = responseData['CheckResetPwdApi'].Table[0];
                 this.isActive = table.Status === "Active" ? true : false;
-                this.handleSendEmail()
             }
         } catch (error) {
             console.log(error);
         }
-    }
-
-    private handleSendEmail() {
-
     }
 
     private generatePassword() {

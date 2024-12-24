@@ -1,100 +1,30 @@
-<section class="onboarding">
-    <div class="left">
-        <div class="head">
-            <h1 class="text-light"><a class="scrollto"><span>revAmp</span></a></h1>
-            <h1 class="title">Start your free trial</h1>
-            <div class="desc">
-                <mat-icon>check_circle</mat-icon>
-                <span>No Credit / Debeit card required</span>
-            </div>
-        </div>
-        <div class="contents">
-            <div class="point">
-                <div class="icon">
-                    <mat-icon>support_agent</mat-icon>
+<section>
+    <div id="wrapper">
+        <div id="left">
+            <div id="signin">
+                <div class="logo">
+                    <h2>Revamp Gen AI</h2>
                 </div>
-                <div class="content-title">24 / 7 Customer support</div>
-                <div class="content-desc">
-                    Customer support is a service provided by a company to assist customers with inquiries, issues, or technical problems related to its products or services. It typically involves resolving complaints, providing product information, and offering solutions to ensure customer satisfaction.
-                </div>
-            </div>
-            <div class="point">
-                <div class="icon">
-                    <mat-icon>support_agent</mat-icon>
-                </div>
-                <div class="content-title">24 / 7 Customer support</div>
-                <div class="content-desc">
-                    Customer support is a service provided by a company to assist customers with inquiries, issues, or technical problems related to its products or services. It typically involves resolving complaints, providing product information, and offering solutions to ensure customer satisfaction.
-                </div>
-            </div>
-            <div class="point">
-                <div class="icon">
-                    <mat-icon>support_agent</mat-icon>
-                </div>
-                <div class="content-title">24 / 7 Customer support</div>
-                <div class="content-desc">
-                    Customer support is a service provided by a company to assist customers with inquiries, issues, or technical problems related to its products or services. It typically involves resolving complaints, providing product information, and offering solutions to ensure customer satisfaction.
+                <div class="form">
+                    <div>
+                        <label>Key</label>
+                        <input type="text" class="text-input" [(ngModel)]="key" autocomplete="off" name="key" />
+                    </div>
+                    <div class="action-container">
+                        <button type="button" class="primary-btn" (click)="handleSetDatabaseKey()">Submit</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="right">
-        <ng-container *ngIf="!isKeyAvalible; else keyTemplate">
-            <div class="head">
-                <p>Have your key ?</p>
-                <p (click)="isKeyAvalible = !isKeyAvalible">Click to Continue to set your key and Login 😀 !... <mat-icon>chevron_right</mat-icon></p>
-            </div>
-            <div class="divider">
-                <span>or</span>
-            </div>
-            <div class="forms" *ngIf="!isKeyAvalible">
-                <div class="name">
-                    <mat-form-field appearance="outline">
-                        <mat-label>First Name</mat-label>
-                        <input matInput type="text" placeholder="Enter First Name">
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                        <mat-label>Last Name</mat-label>
-                        <input matInput type="text" placeholder="Enter Last Name">
-                    </mat-form-field>
-                </div>
-                <div class="username">
-                    <mat-form-field appearance="outline">
-                        <mat-label>User Name</mat-label>
-                        <input matInput type="text" placeholder="Enter User Name">
-                    </mat-form-field>
-                </div>
-                <div class="email">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Email</mat-label>
-                        <input matInput type="email" placeholder="Enter Email">
-                    </mat-form-field>
-                </div>
-                <div class="mobile">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Mobile Number</mat-label>
-                        <input matInput type="number" placeholder="Enter Phone Number">
-                    </mat-form-field>
-                </div>
-                <div class="password">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Password</mat-label>
-                        <input matInput type="email" placeholder="Enter Password">
-                    </mat-form-field>
+        <div id="right">
+            <div id="showcase">
+                <div class="showcase-content">
+                    <h1 class="showcase-text">
+                        Add Your to <strong>Login</strong>
+                    </h1>
+                    <a href="#" class="secondary-btn">Start a FREE 10-day trial</a>
                 </div>
             </div>
-            <button mat-raised-button color="accent">Submit & Generate Key</button>
-        </ng-container>
-        <ng-template #keyTemplate>
-            <h1 class="text">Key Details</h1>
-            <div class="key">
-                <mat-form-field appearance="outline">
-                    <mat-label>Enter Your Key</mat-label>
-                    <input matInput type="text" [(ngModel)]="key" placeholder="Enter First Name">
-                </mat-form-field>
-            </div>
-            <button mat-raised-button color="accent" (click)="handleSetDatabaseKey()">Submit</button>
-        </ng-template>
+        </div>
     </div>
 </section>

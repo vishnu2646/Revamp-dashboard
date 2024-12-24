@@ -17,6 +17,7 @@ import { ApiService } from '../services/api/api.service';
 import { groupData } from '../utils/utils';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivationDialogComponent } from '../components/activation-dialog/activation-dialog.component';
+import { IGroupData, IUserSession } from '../types/types';
 
 @Component({
     selector: 'app-pages',
@@ -43,23 +44,23 @@ export class PagesComponent implements OnInit {
 
     private apiService = inject(ApiService);
 
+    private cd = inject(ChangeDetectorRef);
+
     private window: any;
 
     public disableActivation = false;
 
     public readonly panelOpenState = signal(false);
 
-    public userData: any;
+    public userData: IUserSession = {} as IUserSession;
 
-    public groupData: any = [];
+    public groupData: IGroupData = {} as IGroupData;
 
     public groupedKeys: String[] = [];
 
     public isMenuLoading = false;
 
     public selectedNav: any;
-
-    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     public ngOnInit() {
         this.handleGetUserData();
@@ -68,9 +69,9 @@ export class PagesComponent implements OnInit {
     }
 
     public handleGetUserData() {
-        const data: any = this.userService.getUserData();
-        if(data) {
-            this.userData = data;
+        const data: IUserSession | String = this.userService.getUserData();
+        if(typeof data !== 'string') {
+            this.userData = data as IUserSession;
         }
     }
 
@@ -88,7 +89,7 @@ export class PagesComponent implements OnInit {
             console.log(error);
         } finally {
             this.toggleLoadingState();
-            this.changeDetectorRef.detectChanges();
+            this.cd.detectChanges();
         }
     }
 

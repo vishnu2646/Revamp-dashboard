@@ -3,55 +3,107 @@
         <div class="actions">
             <h2>Dashboard</h2>
         </div>
+        <mat-form-field appearance="outline" *ngIf="dropDownData.length > 0">
+            <mat-label>Module</mat-label>
+            <mat-select
+                (selectionChange)="handleSelectionChange($event)"
+            >
+                @for (data of dropDownData; track data) {
+                    <mat-option [value]="data.SetId">{{data.SetName}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
     </div>
-
-    <div class="tiles-container">
-        @for (dashBoardData of dashBoardDatas; track $index) {
-            @if (dashBoardData.type === 'box') {
-                <mat-card class="tile">
-                    <mat-card-header>
-                        <mat-card-title><span>{{ dashBoardData.dbData[0].Column1 }}</span></mat-card-title>
-                        <mat-icon>more_horiz</mat-icon>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <mat-icon>shopping_bag</mat-icon>
-                        <h3>{{ dashBoardData.dbData[0].RsValue }}</h3>
-                        <div class="details">
-                            <span class="title">{{ dashBoardData.dbData[0].Column2 }}</span>
-                            <span class="value">{{ dashBoardData.dbData[0].RcCnt }}</span>
-                        </div>
-                    </mat-card-content>
-                </mat-card>
+    <ng-container *ngIf="isDashboardLoading; else dashBoardContent;">
+        <app-loader></app-loader>
+    </ng-container>
+    <ng-template #dashBoardContent>
+        <div class="tiles-container">
+            @if(cardDatas && cardDatas.length > 0) {
+                @for (card of cardDatas; track $index) {
+                    <mat-card class="tile" [ngStyle]="{'background-color': card.BgcolorCode.toString().includes('#') ? card.BgcolorCode : '#fff' }">
+                        <mat-card-header>
+                            <mat-card-title><span #tooltip="matTooltip" [matTooltip]="card.Title + ' - ' + card.SubTitle" matTooltipPosition="above" [ngStyle]="{'color': card.BgcolorCode ? '#fff' : '#212121'}">{{ card.Title }} - {{ card.SubTitle }}</span></mat-card-title>
+                            <mat-icon (click)="openDialog(dialogContent, dialogActions, card)">more_horiz</mat-icon>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <mat-icon >shopping_bag</mat-icon>
+                            <h3 [ngStyle]="{'color': card.BgcolorCode ? '#fff' : '#212121'}">{{ card.RcValue }}</h3>
+                            <div class="details">
+                                <span class="title" [ngStyle]="{'color': card.BgcolorCode ? '#fff' : '#212121'}">{{ card.labelTitle }}</span>
+                                <span class="value" [ngStyle]="{'color': card.BgcolorCode ? '#fff' : '#212121'}"># {{ card.RcCount }}</span>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                }
+            } @else {
+                <div>
+                    <p>No Data to Display</p>
+                </div>
             }
-        }
-    </div>
+        </div>
 
-    <div class="table-graph-container">
-        @for (dashBoardData of dashBoardDatas; track $index) {
-            @if (dashBoardData.type === 'Table') {
-                <table>
+        <div class="graph-container">
+            <div class="chart-item" *ngFor="let chartType of chart">
+                <div class="chart-head">
+                    <h4>{{ chartTitle }} - {{ chartSubTitle }}</h4>
+                    <mat-icon (click)="openDialog(dialogContent, dialogActions, chartType)">more_horiz</mat-icon>
+                </div>
+                <canvas [id]="chartType.type + 'Chart'"></canvas>
+            </div>
+        </div>
+
+        <div class="tables">
+            <div class="tableDatas mat-elevation-z8" *ngFor="let table of tableNames">
+                <div class="table-head-container">
+                    <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+                        <mat-icon>
+                            download
+                        </mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="handleExport('xlsx', remaningTable[table], table)">Export Excel</button>
+                        <button mat-menu-item (click)="handleExport('csv', remaningTable[table], table)">Export CSV</button>
+                    </mat-menu>
+                    <p>{{remaningTable[table][0].Title}} - {{ remaningTable[table][0].SubTitle }}</p>
+                </div>
+                <table *ngIf="remaningTable[table]?.length">
                     <thead>
                         <tr>
-                            <th *ngFor="let col of dashBoardData.column">{{ col }}</th>
+                            <ng-container *ngFor="let column of getColumns(table)">
+                                <th *ngIf="column !== 'Title' && column !== 'SubTitle'">{{ column }}</th>
+                            </ng-container>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let row of dashBoardData.dbData['Table1']">
-                            <td *ngFor="let col of dashBoardData.column">{{ row[col.toString()] }}</td>
+                        <tr *ngFor="let row of remaningTable[table]">
+                            <ng-container *ngFor="let cell of getVaues(row)">
+                                <td *ngIf="cell !== row.Title && cell !== row.SubTitle">{{ cell }}</td>
+                            </ng-container>
                         </tr>
                     </tbody>
                 </table>
-            }
-            @if(dashBoardData.type === "Graph") {
-                <mat-card class="graph">
-                    <mat-card-header>
-                        <h2>Graph</h2>
-                    </mat-card-header>
-                    <mat-card-content>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum laborum accusantium, labore voluptatum eveniet est itaque doloribus molestias corrupti earum iste, accusamus alias eius! Deserunt sint sapiente facere laudantium ex?
-                    </mat-card-content>
-                </mat-card>
-            }
-        }
-    </div>
+            </div>
+        </div>
+    </ng-template>
 </section>
+<ng-template #dialogContent>
+    <ng-container *ngIf="!isReportLoaded  else loadTemplate">
+        <div class="reports">
+            <span class="subtitle">
+                Pdf and Excel reports
+            </span>
+            <br />
+            <br />
+            <button mat-raised-button color="primary" style="margin-right: 10px;" *ngIf="report.pdfPath" (click)="handleDownloadFile('pdf')">PDF</button>
+            <button mat-raised-button color="accent" style="margin-right: 10px;" *ngIf="report.xlPath" (click)="handleDownloadFile('excel')">EXCEL</button>
+            <button mat-raised-button color="warn" *ngIf="report.htmlString !== 'N/A'" (click)="handlePreview()">Report Preview</button>
+        </div>
+    </ng-container>
+    <ng-template #loadTemplate>
+        <app-loader></app-loader>
+    </ng-template>
+</ng-template>
+<ng-template #dialogActions>
+    <button mat-button color="warn" (click)="handleCloseDialog()">Close</button>
+</ng-template>

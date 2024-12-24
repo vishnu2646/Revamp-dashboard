@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 
-import { IUser, IUserInfo } from '../../types/types';
+import { IUser, IUserInfo, IUserSession } from '../../types/types';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -35,7 +35,7 @@ export class UserserviceService {
         this.router.navigate(['/auth/login']);
     }
 
-    public getCookieData(): any {
+    public getCookieData(): String {
         const cookieData = this.cookieService.get('key');
 
         if(cookieData) {
@@ -45,7 +45,7 @@ export class UserserviceService {
         }
     }
 
-    public getUserData(): any {
+    public getUserData(): IUserSession | String {
         const userData = sessionStorage.getItem('user');
         if(userData) {
             return JSON.parse(userData);

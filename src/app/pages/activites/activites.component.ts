@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject, Input, OnChanges, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UserserviceService } from '../../services/user/userservice.service';
-import { IActivity, IRecentActivity, IUser } from '../../types/types';
+import { IActivity, IRecentActivity, IUser, IUserSession } from '../../types/types';
 import { distinctUntilChanged, lastValueFrom, Subscription } from 'rxjs';
 import { ApiService } from '../../services/api/api.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -60,7 +60,7 @@ export class ActivitesComponent {
 
     public activity: String = '';
 
-    public userData: any;
+    public userData: IUserSession = {} as IUserSession;
 
     public dataSource: MatTableDataSource<IActivity> = new MatTableDataSource<IActivity>();
 
@@ -90,7 +90,6 @@ export class ActivitesComponent {
         this.activatedRoute.queryParams.subscribe(params => {
             this.module = params['module'];
             this.activity = params['activity'];
-            console.log(this.activity);
         });
 
         if(this.router.url.includes("activites")) {
@@ -111,7 +110,7 @@ export class ActivitesComponent {
     }
 
     public handleGetUserData(): void {
-        const data: IUser = this.userService.getUserData() as IUser;
+        const data: IUserSession = this.userService.getUserData() as IUserSession;
         if(data) {
             this.userData = data;
         }

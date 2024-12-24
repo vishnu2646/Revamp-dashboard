@@ -7,6 +7,32 @@ export interface IUserInfo {
     Table: IUser[];
 }
 
+export interface IUserSession {
+    AppUrl: String;
+    AuthCode: String;
+    ComCode: number;
+    ComId: String;
+    ComName: String;
+    FailureCount: number;
+    LiveStatus: String;
+    UserEmail: String;
+    UserMobNum: String;
+    UsrId: number;
+    UsrName: String;
+    UsrPermission: String;
+    logid: number;
+    sessionId: String;
+    status: String;
+}
+
+export interface IIpAdress {
+    ip: string;
+}
+
+export interface IGroupData {
+    [key: string]: Array<{[key: string]: any}>;
+}
+
 export interface IMenu {
     MdlType: String;
     Slno: number;
@@ -86,6 +112,20 @@ export interface IAdvRmpRptGenData {
     }
 }
 
+export interface IAdvanceReport {
+    ActionResult: String;
+    AddlSrcHtmlFile: String;
+    DataSheetStart: number;
+    ErrorDesc: String;
+    ExcelOutput: String;
+    HTMlString: 'N/A';
+    ReportTitle: String;
+    RevPDFPath: String;
+    RevXlPath: String;
+    RptId: number;
+    RptOutputFile: String;
+    SrcHTMLFile: String;
+}
 
 export interface ITilesData {
     DSBTitle: String;
@@ -126,4 +166,20 @@ export interface IDashboardType {
     RcdCnountCol: String;
     labelSize: String;
     labelTitle: String
+}
+
+export interface IDashboardDropDown {
+    SetId: number;
+    SetName: String;
+}
+
+export interface IDashboardModal {
+    APiUrl: String;
+    GraphType: String;
+    ModelName: String;
+    Modelid: number;
+    SetId: number;
+    SetName: String;
+    SubTitle: String;
+    Title: String;
 }

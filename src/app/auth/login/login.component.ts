@@ -12,8 +12,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { IMAGE_CONFIG } from '@angular/common';
 import { IpserviceService } from '../../services/ipService/ipservice.service';
-import { IUser } from '../../types/types';
+import { IIpAdress, IUserSession } from '../../types/types';
 import { LoaderComponent } from '../../components/loader/loader.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-login',
@@ -25,7 +27,9 @@ import { LoaderComponent } from '../../components/loader/loader.component';
         MatFormFieldModule,
         MatButtonModule,
         MatCheckboxModule,
-        LoaderComponent
+        LoaderComponent,
+        MatCardModule,
+        MatIconModule
     ],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss',
@@ -44,15 +48,17 @@ export class LoginComponent {
 
     private router = inject(Router);
 
-    private userData: IUser = {} as IUser;
-
     private userService = inject(UserserviceService);
 
     private ipService = inject(IpserviceService);
 
-    private dataToCookie: any;
+    private userSessionData: IUserSession = {} as IUserSession;
 
     public toggleOTPfield: boolean = false;
+
+    public otp: String = '';
+
+    public viewPassword: boolean = false;
 
     public isLoading = false;
 
@@ -65,28 +71,34 @@ export class LoginComponent {
         ComId: 'GRANT000000000000001',
     }
 
-    public otp: String = '';
-
     public ngOnInit() {
         const sessionId = uuidv4();
         this.user.SessionId = sessionId;
         this.handleUpdateIpAddress();
     }
 
+    public validatePassword(event: string) {
+        if(event.includes('#')) {
+            this.openSnackBar('Please enter your password without #', 'X');
+        }
+    }
+
     public async handleLogin() {
         this.isLoading = !this.isLoading;
         try {
-            const repsonseData: any = await lastValueFrom(this.userService.loginService(this.user));
+            const repsonseData = await lastValueFrom(this.userService.loginService(this.user));
             if(repsonseData && repsonseData['GetLoginApi']) {
-                this.dataToCookie = repsonseData['GetLoginApi'].Table[0]
-                this.dataToCookie['sessionId'] = this.user.SessionId;
-                // this.userService.setCookie(this.dataToCookie);
-                sessionStorage.setItem('user', JSON.stringify(this.dataToCookie));
+                this.userSessionData = repsonseData['GetLoginApi'].Table[0];
+                this.userSessionData['sessionId'] = this.user.SessionId;
+
+                sessionStorage.setItem('user', JSON.stringify(this.userSessionData));
+
                 this.openSnackBar('Login Successfull', 'X');
                 this.router.navigate(['/dashboard']);
             }
         } catch (error) {
             console.log(error);
+            this.openSnackBar('Invalid credentials', 'X');
         } finally {
             this.isLoading = !this.isLoading;
         }
@@ -97,9 +109,9 @@ export class LoginComponent {
     }
 
     private handleUpdateIpAddress() {
-        this.ipService.getIpAddress().subscribe((data: any) => {
+        this.ipService.getIpAddress().subscribe((data: IIpAdress) => {
             if(Object.keys(data).includes('ip')) {
-                this.user.IPAddress = data['ip'];
+                this.user.IPAddress = data.ip;
             }
         });
     }
@@ -108,8 +120,7 @@ export class LoginComponent {
         this._snackBar.open(message, action, {
             horizontalPosition: "right",
             verticalPosition: "top",
-            duration: 2000
+            duration: 5000
         });
     }
-
 }

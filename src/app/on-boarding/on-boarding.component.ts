@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { UserserviceService } from '../services/user/userservice.service';
 import { CookieService } from 'ngx-cookie-service';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
     selector: 'app-on-boarding',
@@ -19,7 +20,8 @@ import { CookieService } from 'ngx-cookie-service';
         FormsModule,
         CommonModule,
         MatInputModule,
-        MatButtonModule
+        MatButtonModule,
+        MatCardModule,
     ],
     templateUrl: './on-boarding.component.html',
     styleUrl: './on-boarding.component.scss'

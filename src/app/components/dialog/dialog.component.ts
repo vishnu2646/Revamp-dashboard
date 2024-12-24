@@ -42,9 +42,9 @@ export class DialogComponent {
     @Input()
     public actions!: TemplateRef<any>;
 
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(@Inject(MAT_DIALOG_DATA) public data: {[key: string]: string}) {
         if (data) {
-            this.title = data.title || this.title;
+            this.title = data['title'] || this.title;
         }
     }
 

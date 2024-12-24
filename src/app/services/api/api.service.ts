@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-// import { ConfigService } from '../config/config.service';
 import { IRecentActivity, IReportDetails } from '../../types/types';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -9,8 +8,6 @@ import { CookieService } from 'ngx-cookie-service';
     providedIn: 'root'
 })
 export class ApiService {
-    private key: String = '';
-
     private httpClient = inject(HttpClient);
 
     private cookieService = inject(CookieService);
@@ -32,14 +29,23 @@ export class ApiService {
         return this.httpClient.get(`${this.baseUrl}/GetAspSessionId?UsrId=${userId}&Authcode=${authCode}&Logid=${logId}&databaseKey=${key}`)
     }
 
-    public getDashboardIndividualDataService(id: number, user: String, type: String): Observable<any> {
+    public getGetDashboardSetListService(user: String): Observable<any> {
         const key = this.cookieService.get('key');
-        return this.httpClient.get(`${this.baseUrl}/DashboardIndividualDataRev?dcId=${id}&User=${user}&DBType=${type}&databaseKey=${key}`);
+        return this.httpClient.get(`${this.baseUrl}/GetDashboardSetList?User=${user}&databaseKey=${key}`)
     }
 
-    public getGetDashboardModelService(user: String): Observable<any> {
+    public getDashboardIndividualDataService(id: number, user: String): Observable<any> {
         const key = this.cookieService.get('key');
-        return this.httpClient.get(`${this.baseUrl}/GetDashboardModelRev?User=${user}&databaseKey=${key}`)
+        return this.httpClient.get(`${this.baseUrl}/DashboardIndividualDataRev?SetId=${id}&User=${user}&databaseKey=${key}`);
+    }
+
+    public getGetDashboardModelService(user: String, id: number): Observable<any> {
+        const key = this.cookieService.get('key');
+        return this.httpClient.get(`${this.baseUrl}/GetDashboardModelRev?User=${user}&SetId=${id}&databaseKey=${key}`)
+    }
+
+    public getDashBoardReportService(url: string): Observable<any> {
+        return this.httpClient.get(url);
     }
 
     public getMenuExplorerService(mdlId: String, usrId: number): Observable<any> {

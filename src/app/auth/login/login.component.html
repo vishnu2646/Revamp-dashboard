@@ -1,44 +1,54 @@
-<section class="login-wrapper">
-    <!-- Left -->
-    <div class="left">
-        <img class="login-hero" src="../../../assets/login.jpg" alt="logo">
-    </div>
-    <div class="right">
-        <div class="title">
-            <h3>Welcome to</h3>
-            <h2 class="company">Revamp Tech</h2>
-        </div>
-        <div class="form-fields">
-            @if(toggleOTPfield) {
-                <div class="otp-forms">
-                    <mat-form-field appearance="outline">
-                        <mat-label>OTP</mat-label>
-                        <input matInput type="password" [(ngModel)]="otp" placeholder="Enter Username">
-                    </mat-form-field>
-                    <mat-checkbox color="primary">Remember Me</mat-checkbox>
-                    <br />
-                    <br />
-                    <button mat-raised-button color="primary" class="login-btn">Submit</button>
+<section>
+    <div id="wrapper">
+        <div id="left">
+            <div id="signin">
+                <div class="logo">
+                    <h2>Revamp Gen AI</h2>
                 </div>
-            } @else {
-                <div class="user-forms">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Username</mat-label>
-                        <input matInput type="text" [(ngModel)]="user.UsrName" placeholder="Enter Username">
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                        <mat-label>password</mat-label>
-                        <input matInput type="password" [(ngModel)]="user.UsrPwd" placeholder="Enter Username">
-                    </mat-form-field>
-                    <p class="forget-password" (click)="handleNaviagteToReset()">Forget Password ?</p>
-                    <button mat-raised-button color="primary" class="otp-btn" (click)="handleLogin()">Login</button>
+                <div class="form">
+                    <div>
+                        <label>username</label>
+                        <input type="text" class="text-input" [(ngModel)]="user.UsrName" name="username"/>
+                    </div>
+                    <div>
+                        <label>Password</label>
+                        <input [type]="viewPassword ? 'text' : 'password'" class="text-input" [(ngModel)]="user.UsrPwd" (ngModelChange)="validatePassword($event)" name="password"/>
+                    </div>
+                    <div class="action-container">
+                        <button type="button" class="primary-btn" (click)="handleLogin()">Sign In</button>
+                        <!-- @if(!viewPassword) {
+                            <span (click)="viewPassword = !viewPassword">
+                                <mat-icon style="color: white;">visibility</mat-icon>
+                                View Password
+                            </span>
+                        } @else {
+                            <span (click)="viewPassword = !viewPassword">
+                                <mat-icon style="color: white;">visibility_off</mat-icon>
+                                Hide Password
+                            </span>
+                        } -->
+                    </div>
+                    @if (isLoading) {
+                        <app-loader></app-loader>
+                    }
                 </div>
-            }
+                <div class="links">
+                    <a (click)="handleNaviagteToReset()">Forgot Password</a>
+                </div>
+            </div>
+            <footer id="main-footer">
+                <p>Copyright &copy; 2018, Revamp Gen AI, All Rights Reserved</p>
+            </footer>
         </div>
-
-        @if (isLoading) {
-            <app-loader></app-loader>
-        }
+        <div id="right">
+            <div id="showcase">
+                <div class="showcase-content">
+                    <h1 class="showcase-text">
+                        Let's create the future <strong>together</strong>
+                    </h1>
+                    <a href="#" class="secondary-btn">Start a FREE 10-day trial</a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>

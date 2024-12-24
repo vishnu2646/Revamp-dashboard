@@ -2,7 +2,7 @@ import { Component, Inject, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { ApiService } from '../../services/api/api.service';
-import { IUser } from '../../types/types';
+import { IUser, IUserSession } from '../../types/types';
 import { UserserviceService } from '../../services/user/userservice.service';
 
 
@@ -22,12 +22,12 @@ export class ActivationDialogComponent {
 
     private userService = inject(UserserviceService);
 
-    private userData: any;
+    private userData: IUserSession = {} as IUserSession;
 
     public dialogRef = inject(MatDialogRef<ActivationDialogComponent>);
 
     ngOnInit() {
-        const data: IUser = this.userService.getUserData() as IUser;
+        const data: IUserSession = this.userService.getUserData() as IUserSession;
         if(data) {
             this.userData = data;
         }

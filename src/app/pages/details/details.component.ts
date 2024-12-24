@@ -16,7 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { UserserviceService } from '../../services/user/userservice.service';
 import { ApiService } from '../../services/api/api.service';
 import { LoaderComponent } from "../../components/loader/loader.component";
-import { IAttachments, IComments, IHistory, IReport, IUser } from '../../types/types';
+import { IAttachments, IComments, IHistory, IReport, IUser, IUserSession } from '../../types/types';
 import { ExportService } from '../../services/export/export.service';
 
 @Component({
@@ -57,7 +57,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
     public loading = false
 
-    public userData: any;
+    public userData: IUserSession = {}  as IUserSession;
 
     public recivedData: any;
 
@@ -105,7 +105,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
     }
 
     public handleGetUserData(): void {
-        const data: IUser = this.userService.getUserData() as IUser;
+        const data: IUserSession = this.userService.getUserData() as IUserSession;
         if(data) {
             this.userData = data;
         }

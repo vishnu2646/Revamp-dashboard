@@ -7,7 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { IUser } from '../../types/types';
+import { IUserSession } from '../../types/types';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-change-password',
@@ -17,7 +18,8 @@ import { IUser } from '../../types/types';
         MatInputModule,
         MatFormFieldModule,
         MatButtonModule,
-        MatCheckboxModule
+        MatCheckboxModule,
+        MatIconModule
     ],
     templateUrl: './change-password.component.html',
     styleUrl: './change-password.component.scss'
@@ -27,16 +29,15 @@ export class ChangePasswordComponent {
 
     private router = inject(Router);
 
-    private isActive = false;
+    public userData: IUserSession | string = {} as IUserSession;
 
-    public userData: any;
+    public viewPassword: boolean = false;
 
     public passwordInfo = {
         username: '',
         OldPassword: '',
         password: '',
         rePassword: '',
-        key: '',
     }
 
     public ngOnInit() {
@@ -44,11 +45,10 @@ export class ChangePasswordComponent {
     }
 
     public handleGetUserData() {
-        const data = this.userService.getUserData();
-        if(data) {
-            this.userData = data;
-            this.passwordInfo.username = this.userData.UsrName;
-            this.passwordInfo.key = this.userData.key;
+        const data: IUserSession | String = this.userService.getUserData();
+        if(typeof data !== 'string') {
+            this.userData = data as IUserSession;
+            this.passwordInfo.username = this.userData.UsrName.toString();
         }
     }
 
