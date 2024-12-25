@@ -75,6 +75,13 @@ export class LoginComponent {
         const sessionId = uuidv4();
         this.user.SessionId = sessionId;
         this.handleUpdateIpAddress();
+        const key = this.userService.getCookieData();
+        if(key === 'Key not found') {
+            this._snackBar.open("Please add your Key", 'X', {
+                horizontalPosition: "right",
+                verticalPosition: "top",
+            });
+        }
     }
 
     public validatePassword(event: string) {
@@ -98,7 +105,7 @@ export class LoginComponent {
             }
         } catch (error) {
             console.log(error);
-            this.openSnackBar('Invalid credentials', 'X');
+            this.openSnackBar('Invalid credentials or Invalid Key', 'X');
         } finally {
             this.isLoading = !this.isLoading;
         }
@@ -106,6 +113,10 @@ export class LoginComponent {
 
     public handleNaviagteToReset() {
         this.router.navigate(['/auth/reset-password']);
+    }
+
+    public handleAddKey() {
+        this.router.navigate(['/']);
     }
 
     private handleUpdateIpAddress() {

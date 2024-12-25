@@ -6,9 +6,15 @@ export const authGuard: CanActivateFn = (route, state) => {
     const userService = inject(UserserviceService);
     const router = inject(Router);
 
-    const isAuthenticated = userService.getCookieData();
+    const isAuthenticated = userService.getUserData();
 
-    if(isAuthenticated === 'No cookie data'){
+    const key = userService.getCookieData();
+
+    if(key && key === 'Key not found') {
+        console.log("key")
+        router.navigate(['/']);
+        return false;
+    } else if(isAuthenticated === 'User Not found'){
         router.navigate(['/auth/login']);
         return false;
     }

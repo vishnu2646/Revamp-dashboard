@@ -16,6 +16,10 @@
                     </div>
                     <div class="action-container">
                         <button type="button" class="primary-btn" (click)="handleLogin()">Sign In</button>
+                        <span (click)="handleAddKey()">
+                            <mat-icon style="color: white;">key</mat-icon>
+                            Add your key
+                        </span>
                         <!-- @if(!viewPassword) {
                             <span (click)="viewPassword = !viewPassword">
                                 <mat-icon style="color: white;">visibility</mat-icon>

@@ -20,6 +20,7 @@ import { ExportService } from '../../services/export/export.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DialogComponent } from '../../components/dialog/dialog.component';
 import { LoaderComponent } from "../../components/loader/loader.component";
+import { CookieService } from 'ngx-cookie-service';
 
 Chart.register(...registerables);
 
@@ -52,6 +53,8 @@ export class DashboardComponent implements OnInit {
     private apiService = inject(ApiService);
 
     private exportService = inject(ExportService);
+
+    private cookieService = inject(CookieService);
 
     private dialog = inject(MatDialog);
 

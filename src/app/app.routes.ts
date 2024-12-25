@@ -25,7 +25,6 @@ export const routes: Routes = [
             {
                 path: 'login',
                 component: LoginComponent,
-                canActivate: [sessionGuard]
             },
             {
                 path:'reset-password',
@@ -41,7 +40,7 @@ export const routes: Routes = [
     {
         path: 'dashboard',
         component: PagesComponent,
-        canActivate: [authGuard, sessionGuard],
+        canActivate: [authGuard],
         children: [
             {
                 path: '',
